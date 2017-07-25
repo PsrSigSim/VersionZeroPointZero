@@ -36,32 +36,24 @@ def down_sample(ar, fact):
     return downsampled
 
 
-def rebin(a, newLength):
-    """rebin(old array, new number of bins)
-    This is a very general downsampling rebinner, but has for loops and if
-    statements, hence it is slower than down_sample().
-    'a' must be a 1-d array
+def rebin(ar, newlen):
+    """rebin(ar, newlen)
+    down sample array, ar, to newlen number of bins
+    This is a general downsampling rebinner, but is slower than down_sample().
+    'ar' must be a 1-d array
     """
-    #TODO Make this code run faster. Vectorize
-    newBins = np.linspace(0, a.size, newLength, endpoint=False)
-    width = int(math.ceil(a.size/newLength))
-    a_rebin=np.zeros((newLength,width))*np.nan
-    #Using NaN means that we do not have extra zeros in the array that would get averaged
-    row = 0
-    column = 0
-    for ii in range(0, a.size):
-        if ii < (newBins[row] + newBins[1]):
-            a_rebin[row,column] = a[ii]
-            column +=1
-        else:
-            column = 0
-            row += 1
-            a_rebin[row,column] = a[ii]
-            column +=1
+    newBins = np.linspace(0, ar.size, newlen, endpoint=False)
+    stride = newBins[1] - newBins[0]
+    maxWid = int(np.ceil(stride))
+    ar_new = np.empty((newlen, maxWid))  # init empty array
+    ar_new.fill(np.nan)  # fill with NaNs (no extra 0s in mean)
 
-    a_rebinned = sp.nanmean(a_rebin,axis=1)
-    #NaN mean does not count NaNs in total
-    return a_rebinned#*np.amax(a)/np.amax(a_rebinned)
+    for ii, lbin in enumerate(newBins):
+        rbin = int(np.ceil(lbin + stride))
+        lbin = int(np.ceil(lbin))
+        ar_new[ii,0:rbin-lbin] = ar[lbin:rbin]
+
+    return sp.nanmean(ar_new, axis=1)  # ingnore NaNs in mean
 
 
 def top_hat_width(sub_band_width, sub_bandwidth_center, DM):
