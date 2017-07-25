@@ -12,33 +12,18 @@ from scipy import ndimage
 from scipy.signal import fftconvolve,correlate
 
 def shiftit(y, shift):
-    """
-    shifts array y by amount shift (in sample numbers)
+    """shiftit(y, shift)
+    shift array y by amount shift (in sample numbers)
     uses shift theorem and FFT
     shift > 0  ==>  lower sample number (earlier)
-    modeled after fortran routine shiftit
-    Optimized from JMC's code by Michael Lam
+    uses rffts and python's complex dtype for readability and speed
     """
-    #TODO Add Try Except for odd length arrays...
-    yfft = np.fft.fft(y)
-    size = np.size(y) #saves time
-    constant = (shift*2*np.pi)/float(size) #needs a negative here for the right direction, put it in?
-    theta = constant*np.arange(size)
-    c = np.cos(theta)
-    s = np.sin(theta)
-    work = np.zeros(size, dtype='complex')
-    work.real = c * yfft.real - s * yfft.imag
-    work.imag = c * yfft.imag + s * yfft.real
-    # enforce hermiticity
-    half_size = int(size//2)
-    work.real[half_size:] = work.real[half_size:0:-1]
-    work.imag[half_size:] = -work.imag[half_size:0:-1]
-    work[half_size] = 0.+0.j
-    #work.real[size//2:] = work.real[size//2:0:-1]
-    #work.imag[size//2:] = -work.imag[size//2:0:-1]
-    #work[size//2] = 0.+0.j
-    workifft = np.fft.ifft(work)
-    return workifft.real
+    yfft = np.fft.fft(y) # hermicity implicitely enforced by rfft
+    fs = np.fft.rfftfreq(len(y))
+    phase = 1j*fs*(shift*2*np.pi) #needs a negative here for the right direction, put it in?
+    yfft_sh = yfft * np.exp(phase)
+    out = np.fft.irfft(yfft_sh)
+    return out
 
 def down_sample(x, R): #Method to down sample an array by a factor
     #down_sample(array, downsampling factor)
