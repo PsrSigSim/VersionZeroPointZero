@@ -9,7 +9,7 @@ import numpy as np
 import scipy as sp
 import math
 from scipy import ndimage
-from scipy.signal import fftconvolve,correlate
+from scipy.signal import fftconvolve, correlate
 
 def shiftit(y, shift):
     """shiftit(y, shift)
@@ -25,14 +25,13 @@ def shiftit(y, shift):
     out = np.fft.irfft(yfft_sh)
     return out
 
-def down_sample(x, R): #Method to down sample an array by a factor
-    #down_sample(array, downsampling factor)
-    #This is fast, but not as general as possible
-
-    x.reshape(-1, R)
-    downsampled = x.reshape(-1, R).mean(axis=1)#/np.amax(x)
-
-    return downsampled#*np.amax(x)/np.amax(downsampled)
+def down_sample(ar, fact):
+    """down_sample(ar, fact)
+    down sample array, ar, by downsampling factor, fact
+    """
+    #TODO this is fast, but not as general as possible
+    downsampled = ar.reshape(-1, fact).mean(axis=1)
+    return downsampled
 
 def rebin(a, newLength):
     """rebin(old array, new number of bins)
