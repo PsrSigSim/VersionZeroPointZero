@@ -11,6 +11,7 @@ import math
 from scipy import ndimage
 from scipy.signal import fftconvolve, correlate
 
+
 def shiftit(y, shift):
     """shiftit(y, shift)
     shift array y by amount shift (in sample numbers)
@@ -25,6 +26,7 @@ def shiftit(y, shift):
     out = np.fft.irfft(yfft_sh)
     return out
 
+
 def down_sample(ar, fact):
     """down_sample(ar, fact)
     down sample array, ar, by downsampling factor, fact
@@ -32,6 +34,7 @@ def down_sample(ar, fact):
     #TODO this is fast, but not as general as possible
     downsampled = ar.reshape(-1, fact).mean(axis=1)
     return downsampled
+
 
 def rebin(a, newLength):
     """rebin(old array, new number of bins)
@@ -81,6 +84,7 @@ def top_hat_width(sub_band_width, sub_bandwidth_center, DM):
 #    return np.convolve(width, pulse, 'same')
 #    #return convolved*np.sum(convolve)/width
 
+
 def block_mean(ar, fact): #Courteousy Mike T. Stack Overflow
     assert isinstance(fact, int), type(fact)
     sx, sy = ar.shape
@@ -89,6 +93,7 @@ def block_mean(ar, fact): #Courteousy Mike T. Stack Overflow
     res = ndimage.mean(ar, labels=regions, index=np.arange(regions.max() + 1))
     res.shape = (int(sx//fact), int(sy//fact))
     return res
+
 
 def savitzky_golay(y, window_size, order, deriv=0, rate=1): #Courteousy scipy recipes
     r"""Smooth (and optionally differentiate) data with a Savitzky-Golay filter.
@@ -162,6 +167,7 @@ def savitzky_golay(y, window_size, order, deriv=0, rate=1): #Courteousy scipy re
     y = np.concatenate((firstvals, y, lastvals))
     return np.convolve( m[::-1], y, mode='valid')
 
+
 def find_nearest(array,value):
     """Returns the argument of the element in an array nearest to value.
     For half width at value use array[max:].
@@ -171,6 +177,7 @@ def find_nearest(array,value):
     if idx == 0 or array[1] < value:
         idx = 1
     return idx
+
 
 def acf2d(array,speed='fast',mode='full',xlags=None,ylags=None):
     """Courteousy of Michael Lam's PyPulse
@@ -229,6 +236,8 @@ def acf2d(array,speed='fast',mode='full',xlags=None,ylags=None):
                 goodinds = np.where(np.isfinite(C))[0] #check for good values
                 retval[j,i] = np.mean(C[goodinds])
         return retval
+
+
 def text_search(search_list, header_values, filepath, header_line=0, file_type='txt'):
     """ Method for pulling value from  a txt file.
     search_list = list of string-type values that demarcate the line in a txt file
@@ -276,6 +285,8 @@ def text_search(search_list, header_values, filepath, header_line=0, file_type='
         raise ValueError('Combination {0} '.format(search_list)+' returned multiple results in txt file.')
 
     return tuple([float(i) for i in output_values])
+
+
 #def debug_print(check):
 #    if debug:
 #        print(check)
