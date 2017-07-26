@@ -62,6 +62,7 @@ def top_hat_width(subband_df, subband_f0, DM):
     broadening. Following Lorimer and Kramer, 2005 (sec 4.1.1 and A2.4)
     subband_df : subband bandwidth (MHz)
     subband_f0 : subband center frequency (MHz)
+    DM : dispersion measure (pc/cm^3)
     return top_hat_width (milliseconds)
     """
     D = 4.148808e3  # sec*MHz^2*pc^-1*cm^3, dispersion const
