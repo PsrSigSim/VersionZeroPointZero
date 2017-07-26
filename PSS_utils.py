@@ -56,17 +56,17 @@ def rebin(ar, newlen):
     return sp.nanmean(ar_new, axis=1)  # ingnore NaNs in mean
 
 
-def top_hat_width(sub_band_width, sub_bandwidth_center, DM):
+def top_hat_width(subband_df, subband_f0, DM):
+    """top_hat_width(subband_df, subband_f0, DM)
+    Returns width of a top-hat pulse to convolve with pulses for dipsersion
+    broadening. Following Lorimer and Kramer, 2005 (sec 4.1.1 and A2.4)
+    subband_df : subband bandwidth (MHz)
+    subband_f0 : subband center frequency (MHz)
+    return top_hat_width (milliseconds)
     """
-    Top Hat pulse to convolve with pulses for dipsersion broadening
-    Given the bandwidth of the subbands and the center of the sub band
-    calculates top_hat width in milliseconds.
-    sub_band_width in MHz
-    sub_bandwidth_center in GHz following
-    (Lorimer and Kramer, 2005)"""
-    th_width = 8.297616e-3 * DM * (sub_band_width) / (sub_bandwidth_center/1e3)**3 #width in milliseconds
-    #freq converted to GHz for calculation above.
-    return th_width
+    D = 4.148808e3  # sec*MHz^2*pc^-1*cm^3, dispersion const
+    width_sec = 2*D * DM * (subband_df) / (subband_f0)**3
+    return width_sec * 1.0e+3  # ms
 
 #def DM_broaden_signal(pulse, width):
 #    """Convolves the pulses with a top hat pulse to DM broaden each pulse. """
