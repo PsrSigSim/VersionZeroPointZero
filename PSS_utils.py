@@ -78,16 +78,6 @@ def top_hat_width(subband_df, subband_f0, DM):
 #    #return convolved*np.sum(convolve)/width
 
 
-def block_mean(ar, fact): #Courteousy Mike T. Stack Overflow
-    assert isinstance(fact, int), type(fact)
-    sx, sy = ar.shape
-    X, Y = np.ogrid[0:sx, 0:sy]
-    regions = sy//fact * (X//fact) + Y//fact
-    res = ndimage.mean(ar, labels=regions, index=np.arange(regions.max() + 1))
-    res.shape = (int(sx//fact), int(sy//fact))
-    return res
-
-
 def savitzky_golay(y, window_size, order, deriv=0, rate=1): #Courteousy scipy recipes
     r"""Smooth (and optionally differentiate) data with a Savitzky-Golay filter.
     The Savitzky-Golay filter removes high frequency noise from data.
