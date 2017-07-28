@@ -242,25 +242,26 @@ def text_search(search_list, header_values, filepath, header_line=0, file_type='
     check = 0
     output_values = list()
 
-    with open(filepath, 'r') as searchfile: # Find Column Numbers from column names
-        if any(isinstance(elem, str) for elem in header_values):
-            column_num = []
-            parsed_header = list(searchfile.readlines()[header_line].split())
-            for ii , header in enumerate(header_values):
-                column_num.append(parsed_header.index(header))
-        else:
-            column_num = np.array(header_values)
+    with open(filepath, 'r') as f:  # read file to local memory
+        searchfile = f.readlines()
+        
+    # Find Column Numbers from column names
+    if any(isinstance(elem, str) for elem in header_values):
+        column_num = []
+        parsed_header = searchfile[header_line].split()
+        for ii, header in enumerate(header_values):
+            column_num.append(parsed_header.index(header))
+    else:
+        column_num = np.array(header_values)
 
+    # Find Values using search keys and column numbers.
+    for line in searchfile:
+        if all(ii in line for ii in search_list):
 
-    with open(filepath, 'r') as searchfile: # Find Values using search keys and column numbers.
-        #TODO Don't know why I need this second with statement, but if I take it out it doesn't work.
-        for line in searchfile:
-            if all(ii in line for ii in search_list):
-
-                info = line.split()
-                for jj, value in enumerate(column_num):
-                    output_values.append(info[value])
-                check += 1
+            info = line.split()
+            for jj, value in enumerate(column_num):
+                output_values.append(info[value])
+            check += 1
 
     if check == 0 :
         raise ValueError('Combination {0} '.format(search_list)+' not found in same line of text file.')
