@@ -78,7 +78,7 @@ def top_hat_width(subband_df, subband_f0, DM):
 #    #return convolved*np.sum(convolve)/width
 
 
-def savitzky_golay(y, window_size, order, deriv=0, rate=1): #Courteousy scipy recipes
+def savitzky_golay(y, window_size, order, deriv=0, rate=1):  # courtesy scipy recipes
     r"""Smooth (and optionally differentiate) data with a Savitzky-Golay filter.
     The Savitzky-Golay filter removes high frequency noise from data.
     It has the advantage of preserving the original shape and
@@ -163,7 +163,7 @@ def find_nearest(array,value):
 
 
 def acf2d(array,speed='fast',mode='full',xlags=None,ylags=None):
-    """Courteousy of Michael Lam's PyPulse
+    """Courtesy of Michael Lam's PyPulse
     Calculate the autocorrelation of a 2 dimensional array.
     """
     if speed == 'fast' or speed == 'slow':
