@@ -19,7 +19,7 @@ def shiftit(y, shift):
     shift > 0  ==>  lower sample number (earlier)
     uses rffts and python's complex dtype for readability and speed
     """
-    yfft = np.fft.fft(y) # hermicity implicitely enforced by rfft
+    yfft = np.fft.rfft(y) # hermicity implicitely enforced by rfft
     fs = np.fft.rfftfreq(len(y))
     phase = 1j*fs*(shift*2*np.pi) #needs a negative here for the right direction, put it in?
     yfft_sh = yfft * np.exp(phase)
