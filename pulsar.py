@@ -44,6 +44,19 @@ class Pulsar(object):
         if self.SignalType == 'voltage':
             self.NRows = int(4)
         self.gauss_template()
+        
+        if self.SignalType == 'voltage':
+            self.profile = np.sqrt(self.profile)/np.sqrt(np.amax(self.profile)) # Corrects intensity pulse to voltage profile.
+            gauss_limit = stats.norm.ppf(0.999, scale=self.gauss_draw_sigma)
+            # Sets the limit so there is only a small amount of clipping because of dtype.
+            self.gauss_draw_norm = self.Signal_in.MetaData.gauss_draw_max/gauss_limit
+            # Normalizes the 99.9 percentile to the dtype maximum.
+
+        elif self.SignalType == 'intensity':
+            gamma_limit = stats.gamma.ppf(0.999, self.gamma_shape, scale=self.gamma_scale)
+            # Sets the limit so there is only a small amount of clipping because of dtype.
+            self.gamma_draw_norm = self.Signal_in.MetaData.gamma_draw_max/gamma_limit
+            # Normalizes the 99.9 percentile to the dtype maximum.
         #TODO Add ability to deal with multiple bands
         #TODO Check to see that you have the correct kind of array and info you need
 
@@ -234,19 +247,6 @@ class Pulsar(object):
         self.NLastPeriodBins = delta_bins - N_periods_to_make * self.nBinsPeriod #Length of last period
         pulseType = {"intensity":"draw_intensity_pulse", "voltage":"draw_voltage_pulse"}
         pulseTypeMethod = getattr(self, pulseType[self.SignalType])
-
-        if self.SignalType == 'voltage':
-            self.profile = np.sqrt(self.profile)/np.sqrt(np.amax(self.profile)) # Corrects intensity pulse to voltage profile.
-            gauss_limit = stats.norm.ppf(0.999, scale=self.gauss_draw_sigma)
-            # Sets the limit so there is only a small amount of clipping because of dtype.
-            self.gauss_draw_norm = self.Signal_in.MetaData.gauss_draw_max/gauss_limit
-            # Normalizes the 99.9 percentile to the dtype maximum.
-
-        elif self.SignalType == 'intensity':
-            gamma_limit = stats.gamma.ppf(0.999, self.gamma_shape, scale=self.gamma_scale)
-            # Sets the limit so there is only a small amount of clipping because of dtype.
-            self.gamma_draw_norm = self.Signal_in.MetaData.gamma_draw_max/gamma_limit
-            # Normalizes the 99.9 percentile to the dtype maximum.
 
         if self.Nt * self.NRows > 500000: #Limits the array size to 2.048 GB
             """The following limits the length of the arrays that we call from pulseTypeMethod(), by limiting the number

@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from . import PSS_utils as utils
 
-__all__= ['profile_plot','pulse_plot','filter_bank','dynamic_spectrum','gain_pdf']
+__all__= ['profile_plot','pulse_plot','filter_bank','dynamic_spectrum','gain_pdf','joy_division_profiles']
 
 #plt.rcParams['figure.figsize'] = (8.0,6.0)
 plt.rcParams.update({'font.size': 14})
@@ -41,6 +41,29 @@ def profile_plot(signal_object, freq_bin=0, phase=False, **kwargs):
         plt.title(Title)
         plt.show()
 
+
+def joy_division_profiles(pulsar_object, step=1, N=10,Title='Profile by Frequency Channel'):
+    array=pulsar_object.profile
+    try:
+        array_len = len(N)
+        jj = 0
+        for ii, jj in enumerate(N):
+            plt.plot(array[jj,:]+ii*(step),c='k')
+        n=len(N)
+    except:
+        Freq_channels = len(array[:,0])
+        Freq_step = int(Freq_channels//N)
+        for ii in range(N):
+            plt.plot(array[ii*Freq_step,:]+ii*(step),c='k')
+        n=N
+    plt.title(Title)
+    plt.xlabel('Phase')
+    plt.ylabel('Frequency Channel')
+    plt.xticks([])
+    plt.yticks([])
+    plt.xlim(0,len(array[0,:]))
+    plt.ylim(0,n*step+0.1)
+    plt.show()
 
 def pulse_plot(signal_object, N_pulses=1, pol_bin=0, freq_bin=0, start_time=0, phase=False, **kwargs):
     try:

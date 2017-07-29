@@ -9,6 +9,8 @@ from scipy import signal
 from . import PSS_utils as utils
 from . import scintillation as scint
 
+__all__ = ['ISM','scintillate','convolve_with_profile','make_dm_broaden_tophat','make_scatter_broaden_exp']
+
 class ISM(object):
     def __init__(self, Signal_in, DM = 30, mode='explore'):
         self.Signal_in = Signal_in
@@ -24,19 +26,23 @@ class ISM(object):
         self.freq_Array = self.Signal_in.freq_Array
         self.mode = mode
         self.DM = DM
+        self.tau_scatter = None
         self.to_DM_Broaden = False
         self.to_Scatter_Broaden_exp = False
         self.to_Scatter_Broaden_stoch = False
+        self.to_Scintillate = False
         self.time_dependent_scatter = False
         self.time_dependent_DM = False
-        self.ISM_Dict = dict(DM = self.DM, dispersion=False, scattering=False, scintillation=False)
+
+
+    def finalize_ism(self):
+        self.ISM_Dict = dict(tau_scatter = self.tau_scatter, DM = self.DM, dispersion=False, scattering=False, scintillation=False)
         self.ISM_Dict['to_DM_Broaden'] = self.to_DM_Broaden
         self.ISM_Dict['to_Scatter_Broaden_exp'] = self.to_Scatter_Broaden_exp
         self.ISM_Dict['to_Scatter_Broaden_stoch'] = self.to_Scatter_Broaden_stoch
         self.ISM_Dict['time_dependent_scatter'] = self.time_dependent_scatter
         self.ISM_Dict['time_dependent_DM'] = self.time_dependent_DM
-
-    def finalize_ism(self):
+        self.ISM_Dict['to_Scintillate'] = self.to_Scintillate
         if self.mode=='explore':
             raise ValueError('No Need to run finalize_ism() if simulator is in explore mode.')
         self.Signal_in.MetaData.AddInfo(self.ISM_Dict)
@@ -188,3 +194,110 @@ class scintillate():
             raise ValueError('Combination of pulsar {0}, telescope {1} and bandwidth {2} MHz'.format(pulsar, telescope, freq_band)+' not found in txt file.')
 
         return scint_bw, scint_timescale
+
+
+def convolve_with_profile(pulsar_object,input_array):
+    """
+    General convolution function. Takes an input array made in other functions
+    to convolve with the pulse profile.
+    
+    Parameters
+    ---
+    pulsar_object: VersionZeroPointZero.pulsar.Pulsar object
+        The pulsar object
+    input_array: somewhere
+        Any array the user wants to convolve with the pulse profile
+    """
+    
+    width = pulsar_object.nBinsPeriod
+    for ii, freq in enumerate(pulsar_object.Signal_in.freq_Array):
+        #Normalizing the pulse profile
+        pulsar_prof_sum = np.sum(pulsar_object.profile[ii,:])
+        pulsar_prof_norm = pulsar_object.profile[ii,:] / pulsar_prof_sum
+        
+        #Normalizing the input array
+        input_array_sum = np.sum(input_array[ii,:])
+        input_array_norm = input_array[ii,:] / input_array_sum
+        
+        #Convolving the input array with the pulse profile
+        convolved_prof = sp.convolve(pulsar_prof_norm, input_array_norm,"full")
+        
+        #Renormalizing the convolved pulse profile
+        pulsar_object.profile[ii,:] = (pulsar_prof_sum)*(convolved_prof[:width])
+
+def make_dm_broaden_tophat(pulsar_object,signal_object):
+    """
+    This is a function that makes a 2-D array of top hat functions
+    to convolve with the pulse profile and simulate DM broadening.
+    Calls general convolution function to convolve with pulse profile.
+    See PATH/TO/CONVOLUTION for more information.
+       
+    Parameters
+    ---------
+    pulsar_object: VersionZeroPointZero.pulsar.Pulsar object
+        The pulsar object 
+    signal_object: VersionZeroPointZero.signal.Signal
+        The signal object
+    
+    Notes
+    -----
+    Also records the DM widths in the MetaData of the signal object.
+    
+    See Lorimer and Kramer 2006 section A2.4
+    """ 
+    
+    dm_widths = np.zeros(pulsar_object.Nf)
+    lowest_freq_top_hat_width = int(utils.top_hat_width(pulsar_object.bw / pulsar_object.Nf, pulsar_object.Signal_in.freq_Array[0], 100) // pulsar_object.TimeBinSize)    
+    tophat_array = np.zeros((pulsar_object.Nf,lowest_freq_top_hat_width))
+    
+    for ii, freq in enumerate(pulsar_object.Signal_in.freq_Array):
+        #Creating the top hat array
+        
+        sub_band_width = pulsar_object.bw / pulsar_object.Nf
+        tophat_width = int(utils.top_hat_width(sub_band_width, freq, signal_object.MetaData.DM) // pulsar_object.TimeBinSize)
+        if tophat_width > pulsar_object.Nt:
+            raise ValueError('Too Much DM! Dispersion broadening top hat wider than data array!')
+        dm_widths[ii] = tophat_width
+        tophat = signal.boxcar(tophat_width)
+        tophat_len=len(tophat)
+        tophat = np.append(tophat,np.zeros(lowest_freq_top_hat_width-tophat_len))
+        tophat_array[ii,:] = tophat
+
+    Dict = {'dm_widths':dm_widths}
+    signal_object.MetaData.AddInfo(Dict)   
+
+    return tophat_array
+
+def make_scatter_broaden_exp(pulsar_object, signal_object, tau_d_in=1):
+    """
+    This is a function that makes a 2-D array of exponential functions
+    to convolve with the pulse profile and simulate scatter broadening.
+    Calls general convolution function to convolve with pulse profile.
+    See PATH/TO/CONVOLUTION for more information.
+
+    Parameters
+    ---------
+    pulsar_object: VersionZeroPointZero.pulsar.Pulsar object
+        The pulsar object 
+    signal_object: VersionZeroPointZero.signal.Signal
+        The signal object
+    tau_d_in: VersionZeroPointZero.scintillation.scale_tau_d
+        The scattering time
+        In units of milliseconds, default 1ms
+        See Cordes et al. 1990
+    
+    See Lorimer and Kramer 2006 section A2.5
+    """
+    
+    width = pulsar_object.nBinsPeriod
+    tau_scatter_time = scint.scale_tau_d(tau_d = tau_d_in,nu_i = signal_object.f0,nu_f = signal_object.freq_Array)
+    tau_scatter_bins = tau_scatter_time / signal_object.TimeBinSize
+    t = np.linspace(0,pulsar_object.T,width)
+    EXP_array = np.zeros((pulsar_object.Nf,width))
+    #Iterating over the tau arrays where each profile 
+    #corresponds to the respective tau index
+    for ii, tau_scatter in enumerate(tau_scatter_time): 
+        EXP = (np.exp(-t/tau_scatter))
+        EXP_array[ii,:] = EXP
+
+    return EXP_array
