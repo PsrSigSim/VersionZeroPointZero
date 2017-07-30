@@ -292,8 +292,6 @@ def text_search(search_list, header_values, filepath, header_line=0, file_type='
         raise ValueError('Combination {0} '.format(search_list)+' returned multiple results in txt file.')
 
     return tuple([float(i) for i in output_values])
-#def debug_print(check):
-#    if debug:
-#        print(check)
-#    else:
-#        pass
+
+def debug_p(var):
+    print(str(var) + ' = ', var)
