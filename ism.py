@@ -42,30 +42,12 @@ class ISM(object):
         self.Signal_in.MetaData.AddInfo(self.ISM_Dict)
 
     def shiftit(self, y, shift):
-        """
-        shifts array y by amount shift (in sample numbers)
-        uses shift theorem and FFT
+        """shiftit(y, shift)
+        shift array y by amount shift (in sample numbers)
         shift > 0  ==>  lower sample number (earlier)
-        modeled after fortran routine shiftit
-        Optimized from JMC's code by Michael Lam
+        calls PSS_utils.shiftit
         """
-        #TODO Add Try Except for odd length arrays...
-        yfft = np.fft.fft(y)
-        size = np.size(y) #saves time
-        constant = (shift*2*np.pi)/float(size) #needs a negative here for the right direction, put it in?
-        theta = constant*np.arange(size)
-        c = np.cos(theta)
-        s = np.sin(theta)
-        work = np.zeros(size, dtype='complex')
-        work.real = c * yfft.real - s * yfft.imag
-        work.imag = c * yfft.imag + s * yfft.real
-        # enforce hermiticity
-        half_size = int(size//2)
-        work.real[half_size:] = work.real[half_size:0:-1]
-        work.imag[half_size:] = -work.imag[half_size:0:-1]
-        work[half_size] = 0.+0.j
-        workifft = np.fft.ifft(work)
-        return workifft.real
+        return utils.shiftit(y, shift) 
 
     def disperse(self):
         #Function to calculate the dispersion per frequency bin for 1/f^2 dispersion
