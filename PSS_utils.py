@@ -69,14 +69,6 @@ def top_hat_width(subband_df, subband_f0, DM):
     width_sec = 2*D * DM * (subband_df) / (subband_f0)**3
     return width_sec * 1.0e+3  # ms
 
-#def DM_broaden_signal(pulse, width):
-#    """Convolves the pulses with a top hat pulse to DM broaden each pulse. """
-#    in_max = np.amax(pulse)
-#    top_hat = sp.signal.boxcar(width)/width
-#    #convolved =
-#    return np.convolve(width, pulse, 'same')
-#    #return convolved*np.sum(convolve)/width
-
 
 def savitzky_golay(y, window_size, order, deriv=0, rate=1):  # courtesy scipy recipes
     r"""Smooth (and optionally differentiate) data with a Savitzky-Golay filter.
@@ -244,7 +236,7 @@ def text_search(search_list, header_values, filepath, header_line=0, file_type='
 
     with open(filepath, 'r') as f:  # read file to local memory
         searchfile = f.readlines()
-        
+
     # Find Column Numbers from column names
     if any(isinstance(elem, str) for elem in header_values):
         column_num = []
@@ -269,10 +261,3 @@ def text_search(search_list, header_values, filepath, header_line=0, file_type='
         raise ValueError('Combination {0} '.format(search_list)+' returned multiple results in txt file.')
 
     return tuple([float(i) for i in output_values])
-
-
-#def debug_print(check):
-#    if debug:
-#        print(check)
-#    else:
-#        pass
