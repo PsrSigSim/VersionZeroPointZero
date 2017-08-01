@@ -6,9 +6,6 @@ from __future__ import (absolute_import, division,
                         print_function, unicode_literals)
 import numpy as np
 import scipy as sp
-import math
-from scipy import ndimage
-from scipy.signal import fftconvolve, correlate
 
 
 def shift_t(y, shift, dt=1):
@@ -141,7 +138,6 @@ def savitzky_golay(y, window_size, order, deriv=0, rate=1):  # courtesy scipy re
        W.H. Press, S.A. Teukolsky, W.T. Vetterling, B.P. Flannery
        Cambridge University Press ISBN-13: 9780521880688
     """
-    import numpy as np
     from math import factorial
 
     try:
@@ -181,6 +177,8 @@ def acf2d(array,speed='fast',mode='full',xlags=None,ylags=None):
     """Courtesy of Michael Lam's PyPulse
     Calculate the autocorrelation of a 2 dimensional array.
     """
+    from scipy.signal import fftconvolve, correlate
+
     if speed == 'fast' or speed == 'slow':
         ones = np.ones(np.shape(array))
         norm = fftconvolve(ones,ones,mode=mode) #very close for either speed
