@@ -41,14 +41,6 @@ class ISM(object):
             raise ValueError('No Need to run finalize_ism() if simulator is in explore mode.')
         self.Signal_in.MetaData.AddInfo(self.ISM_Dict)
 
-    def shiftit(self, y, shift):
-        """shiftit(y, shift)
-        shift array y by amount shift (in sample numbers)
-        shift > 0  ==>  lower sample number (earlier)
-        calls PSS_utils.shiftit
-        """
-        return utils.shiftit(y, shift) 
-
     def disperse(self):
         #Function to calculate the dispersion per frequency bin for 1/f^2 dispersion
         self.ISM_Dict['dispersion'] = True
@@ -61,7 +53,7 @@ class ISM(object):
             self.widths = np.zeros(self.Nf)
             sub_band_width = self.bw/self.Nf
             for ii, freq in enumerate(self.freq_Array):
-                self.signal[ii,:] = self.shiftit(self.signal[ii,:], self.time_delays[ii])
+                self.signal[ii,:] = utils.shift_t(self.signal[ii,:], self.time_delays[ii])
                 width = int(utils.top_hat_width(sub_band_width, freq, self.DM)//self.TimeBinSize)
                 if width > 0 and self.to_DM_Broaden:
                     if width > self.Nt:

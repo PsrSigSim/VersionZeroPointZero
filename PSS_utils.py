@@ -1,5 +1,4 @@
-"""
-utils.py
+"""PSS_utils.py
 A place to organize methods used by multiple modules
 """
 
@@ -12,18 +11,42 @@ from scipy import ndimage
 from scipy.signal import fftconvolve, correlate
 
 
-def shiftit(y, shift):
-    """shiftit(y, shift)
-    shift array y by amount shift (in sample numbers)
-    uses shift theorem and FFT
-    shift > 0  ==>  lower sample number (earlier)
-    uses rffts and python's complex dtype for readability and speed
+def shift_t(y, shift, dt=1):
+    """Shift timeseries data in time.
+    Shift array, y, in time by amount, shift. For dt=1 units of samples 
+    (including fractional samples) are used. Otherwise, shift and dt are
+    assumed to have the same physical units (i.e. seconds).
+    Parameters
+    ----------
+    y : array like, shape (N,), real
+        time series data
+    shift : int or float
+        amount to shift
+    dt : float
+        time spacing of samples in y (aka cadence)
+    Returns
+    -------
+    out : ndarray
+        time shifted data
+    Examples
+    --------
+    >>>shift_t(y, 20)
+    shift data by 20 samples
+
+    >>>shift_t(y, 0.35, dt=0.125)
+    shift data sampled at 8 Hz by 0.35 sec
+
+    Uses np.roll() for integer shifts and the Fourier shift theorem with
+    real FFT in general.  Defined so positive shift yeilds a "delay".
     """
-    yfft = np.fft.rfft(y) # hermicity implicitely enforced by rfft
-    fs = np.fft.rfftfreq(len(y))
-    phase = 1j*fs*(shift*2*np.pi) #needs a negative here for the right direction, put it in?
-    yfft_sh = yfft * np.exp(phase)
-    out = np.fft.irfft(yfft_sh)
+    if isinstance(shift, int) and dt is 1:
+        out = np.roll(y, shift)
+    else:
+        yfft = np.fft.rfft(y) # hermicity implicitely enforced by rfft
+        fs = np.fft.rfftfreq(len(y), d=dt)
+        phase = -1j*2*np.pi*fs*shift
+        yfft_sh = yfft * np.exp(phase)
+        out = np.fft.irfft(yfft_sh)
     return out
 
 
