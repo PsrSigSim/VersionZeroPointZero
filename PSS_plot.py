@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from . import PSS_utils as utils
 
-__all__= ['profile_plot','pulse_plot','filter_bank','dynamic_spectrum','gain_pdf']
+__all__= ['profile_plot','pulse_plot','filter_bank','dynamic_spectrum','gain_pdf','plot_dispersed','joy_division_profiles']
 
 #plt.rcParams['figure.figsize'] = (8.0,6.0)
 plt.rcParams.update({'font.size': 14})
@@ -41,6 +41,29 @@ def profile_plot(signal_object, freq_bin=0, phase=False, **kwargs):
         plt.title(Title)
         plt.show()
 
+
+def joy_division_profiles(pulsar_object, step=1, N=10,Title='Profile by Frequency Channel'):
+    array=pulsar_object.profile
+    try:
+        array_len = len(N)
+        jj = 0
+        for ii, jj in enumerate(N):
+            plt.plot(array[jj,:]+ii*(step),c='k')
+        n=len(N)
+    except:
+        Freq_channels = len(array[:,0])
+        Freq_step = int(Freq_channels//N)
+        for ii in range(N):
+            plt.plot(array[ii*Freq_step,:]+ii*(step),c='k')
+        n=N
+    plt.title(Title)
+    plt.xlabel('Phase')
+    plt.ylabel('Frequency Channel')
+    plt.xticks([])
+    plt.yticks([])
+    plt.xlim(0,len(array[0,:]))
+    plt.ylim(0,n*step+0.1)
+    plt.show()
 
 def pulse_plot(signal_object, N_pulses=1, pol_bin=0, freq_bin=0, start_time=0, phase=False, **kwargs):
     try:
@@ -259,3 +282,27 @@ def dynamic_spectrum(image_screen, signal_object, save=False, window_size = 'opt
         f.savefig('DynamicSpectrum_f0_' + str(S1.f0)+'MHz_DM_'+str(DM))
     plt.draw()
     plt.show()
+
+
+def plot_dispersed(signal_object, N_pulses = 2, channel = 0, **kwargs): # Plots dispersed sig produced in ISM with Disperse()
+    lim = N_pulses*signal_object.MetaData.nBins_per_period
+    psr_period = signal_object.MetaData.pulsar_period
+    if signal_object.SignalType == 'voltage':
+        plt.title('Voltage vs. Time')
+        plt.ylabel('Voltage')
+        plt.xlabel('Time (ms)')
+        plt.xlim(0,psr_period)
+    elif signal_object.SignalType == 'intensity':
+        plt.title('Intensity vs. Time')
+        plt.ylabel('Intensity')
+        plt.xlabel('Time (ms)')
+        plt.xlim(0,psr_period)
+    plt.yticks([])
+    max_lower = np.amax(signal_object.signal[channel,:lim])
+    min_upper = np.amin(signal_object.undispersedsig[channel,:lim])
+    jump = max_lower + np.abs(min_upper) + 4
+    t = np.linspace(0,psr_period,lim)
+    plt.plot(t, signal_object.undispersedsig[channel,:lim]+jump, c='k', **kwargs)
+    plt.plot(t, signal_object.signal[channel,:lim], c='c', **kwargs)
+    plt.show()
+    # TODO flag about if it hasn't been dispersed yet

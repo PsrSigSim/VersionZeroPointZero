@@ -283,6 +283,8 @@ class images(object):
                     screen0fft = np.fft.fft2(screen0)
                 if speed == 'fast':
                     screen0fft = pyfftw.interfaces.scipy_fftpack.fft2(screen0)
+                if speed == 'fastest':
+                    screen0fft = 2
 
                 field0fft = kernel0fft * screen0fft
                 if mode == 'explore':
@@ -303,6 +305,7 @@ class images(object):
                 field = norm * np.fft.fftshift(np.fft.ifft2(field0fft))
             if speed == 'fast':
                 field = norm * pyfftw.interfaces.numpy_fft.fftshift(pyfftw.interfaces.scipy_fftpack.ifft2(screen0))
+                #probably should del field and just straight calculate the gain?
 
             if mode == 'explore':
                 self.field[ii,:,:] = field

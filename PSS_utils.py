@@ -6,11 +6,17 @@ from __future__ import (absolute_import, division,
                         print_function, unicode_literals)
 import numpy as np
 import scipy as sp
+import sys
+try:
+    import pyfftw
+    use_pyfftw = True
+except:
+    use_pyfftw = False
 
 
-def shift_t(y, shift, dt=1):
+def shift_t(y, shift, use_pyfftw=False, PE='FFTW_EXHAUSTIVE', dt=1):
     """Shift timeseries data in time.
-    Shift array, y, in time by amount, shift. For dt=1 units of samples 
+    Shift array, y, in time by amount, shift. For dt=1 units of samples
     (including fractional samples) are used. Otherwise, shift and dt are
     assumed to have the same physical units (i.e. seconds).
     Parameters
@@ -34,16 +40,29 @@ def shift_t(y, shift, dt=1):
     shift data sampled at 8 Hz by 0.35 sec
 
     Uses np.roll() for integer shifts and the Fourier shift theorem with
-    real FFT in general.  Defined so positive shift yeilds a "delay".
+    real FFT in general.  Defined so positive shift yields a "delay".
     """
     if isinstance(shift, int) and dt is 1:
         out = np.roll(y, shift)
     else:
-        yfft = np.fft.rfft(y) # hermicity implicitely enforced by rfft
-        fs = np.fft.rfftfreq(len(y), d=dt)
-        phase = -1j*2*np.pi*fs*shift
-        yfft_sh = yfft * np.exp(phase)
-        out = np.fft.irfft(yfft_sh)
+        if use_pyfftw:
+            #print('Starting rfft')
+            #dummy_array = pyfftw.empty_aligned(self.Nt, dtype=self.MD.data_type)
+            rfftw_Object = pyfftw.builders.rfft(y, planner_effort=PE) #'FFTW_EXHAUSTIVE'
+            #print('Past rfft intialization')
+            yfft = rfftw_Object(y) # hermicity implicitely enforced by rfft
+            #print('Past rfft')
+            fs = np.fft.rfftfreq(len(y), d=dt)
+            phase = 1j*2*np.pi*fs*shift
+            yfft_sh = yfft * np.exp(phase)
+            irfftw_Object = pyfftw.builders.irfft(yfft_sh, planner_effort=PE) #'FFTW_EXHAUSTIVE'
+            out = irfftw_Object(yfft_sh)
+        else:
+            yfft = np.fft.rfft(y) # hermicity implicitely enforced by rfft
+            fs = np.fft.rfftfreq(len(y), d=dt)
+            phase = 1j*2*np.pi*fs*shift
+            yfft_sh = yfft * np.exp(phase)
+            out = np.fft.irfft(yfft_sh)
     return out
 
 
@@ -54,6 +73,8 @@ def down_sample(ar, fact):
     #TODO this is fast, but not as general as possible
     downsampled = ar.reshape(-1, fact).mean(axis=1)
     return downsampled
+
+    return sp.nanmean(ar_new, axis=1)  # ingnore NaNs in mean
 
 
 def rebin(ar, newlen):
