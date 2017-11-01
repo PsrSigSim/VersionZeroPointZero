@@ -16,7 +16,7 @@ class Pulsar(object):
     def __init__(self, Signal_in, period = 50, flux=3): #period in milliseconds
         """Intializes pulsar class. Inherits attributes of input signal class as well as pulse period.
         period = pulsar period in milliseconds.
-        flux = mean flux of pulsar in mJy
+        flux = mean flux density of pulsar in mJy
         Many other attributes can be set, including the statistical parameters of the pulse draws.
         """
 
