@@ -202,8 +202,12 @@ def GBT():
     return g
 
 def Arecibo():
-    """The Aricebo 300m Telescope"""
-    a = Telescope(300, name="Arecibo")
+    """The Arecibo 300m Telescope
+    with Lwide: effective area ~ 22000 m^2 (G~10)
+                Tsys ~ 35 K
+    see: http://www.naic.edu/~astro/RXstatus/rcvrtabz.shtml
+    """
+    a = Telescope(300.0, area=22000.0, Tsys=35.0, name="Arecibo")
     a.add_system(name="430_PUPPI",
                  receiver=Receiver(430, 100, name="430"),  # check me
                  backend=Backend(samprate=1.5625, name="PUPPI"))
