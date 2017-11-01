@@ -119,7 +119,7 @@ class Telescope(object):
 
         elif dt_tel > dt_sig:
             NewLength = int(signal.TotTime // dt_tel)
-            out=np.zeros((signal.Nf, NewLength))
+            out = np.zeros((signal.Nf, NewLength))
             for ii, row in enumerate(sig_in):
                 out[ii,:] = utils.rebin(row, NewLength)
             print("Input signal sampling frequency= ", dt_sig," ms. Telescope sampling frequency = ",dt_tel," ms")
