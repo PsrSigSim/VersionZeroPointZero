@@ -144,12 +144,35 @@ class Telescope(object):
         Nt, Nf = out.shape
 
         if noise :
-            out += self.noise_norm * np.random.randn(Nf, Nt)**2
+            out += self.radiometer_noise(signal)
 
         return out
 
-    def radiometer_noise(self):
-        pass
+    def radiometer_noise(self, signal):
+        # flux density fluctuations: sigS from Lorimer & Kramer eq 7.12
+        #TODO replace A with Aeff, depends on pointing for some telescopes
+        #TODO Tsys -> Trec, compute Tsky, Tspill, Tatm from pointing
+        Tobs = signal.TotTime * 1.0e-3  # convert to sec
+        BW = signal.bw * 1.0e6  # convert to Hz
+        G = self.area / _kB  # K/mJy (total gain, divide between polarization)
+        
+        # noise variance per pol
+        sigS = self.Tsys / G / np.sqrt(np * Tobs * BW) * 1.0e3 # mJy
+        
+        if SignalType is 'voltage':
+            Nt = signal.Nt
+            Np = signal.Npols
+            norm = sigS*Np  # TODO!!! convert to "int counts"
+            noise = sigS*Np * np.random.randn(Np, Nt)
+        else:
+            Nt = signal.Nt
+            Nf = signal.Nf
+            norm = sigS  # TODO!!! convert to "int counts"
+            noise = sigS * np.random.chisquare(1, (Nf, Nt))
+
+        return noise
+
+
     def rfi(self):
         pass
     def init_signal(self, system):
