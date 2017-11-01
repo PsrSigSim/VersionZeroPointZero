@@ -7,11 +7,11 @@ from __future__ import (absolute_import, division,
 import numpy as np
 import scipy as sp
 import sys
-try:
-    import pyfftw
-    use_pyfftw = True
-except:
-    use_pyfftw = False
+#try:
+#    import pyfftw
+#    use_pyfftw = True
+#except:
+#    use_pyfftw = False
 
 
 def shift_t(y, shift, use_pyfftw=False, PE='FFTW_EXHAUSTIVE', dt=1):

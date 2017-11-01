@@ -18,11 +18,11 @@ def profile_plot(signal_object, freq_bin=0, phase=False, **kwargs):
         profile = signal_object.MetaData.profile
     except:
         raise ValueError('Need to sample pulses!')
-    Nx = profile.size
+    Nx = profile.shape[1]
 
     if phase:
         Phase = np.linspace(0., 1, Nx)
-        plt.plot(Phase, profile, lw=0.7, **kwargs)
+        plt.plot(Phase, profile[0], lw=0.7, **kwargs)
         plt.xlabel('Phase')
         #plt.ylabel(Y_label)
         plt.yticks([])
@@ -33,7 +33,7 @@ def profile_plot(signal_object, freq_bin=0, phase=False, **kwargs):
     else:
         stop_time = signal_object.MetaData.pulsar_period
         time = np.linspace(0, stop_time, Nx)
-        plt.plot(time, profile, lw=0.7, **kwargs)
+        plt.plot(time, profile[0], lw=0.7, **kwargs)
         plt.xlabel('Time (ms)')
         #plt.ylabel(Y_label)
         plt.ylim(0,profile.max()*1.05)

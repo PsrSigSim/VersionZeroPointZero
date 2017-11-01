@@ -9,11 +9,11 @@ import sys, os, time
 from scipy import signal
 from . import PSS_utils as utils
 from . import scintillation as scint
-try:
-    import pyfftw
-    use_pyfftw = True
-except:
-    use_pyfftw = False
+#try:
+#    import pyfftw
+#    use_pyfftw = True
+#except:
+use_pyfftw = False
 
 __all__ = ['ISM','scintillate','convolve_with_profile','make_dm_broaden_tophat','make_scatter_broaden_exp']
 
@@ -80,11 +80,12 @@ class ISM(object):
                 #dummy_array = pyfftw.empty_aligned(self.Nt, dtype=self.MD.data_type)
                 #Could test putting in data type float32 and seeing if that is faster.
             shift_start = time.time()
+
             for ii, freq in enumerate(self.freq_Array):
                 if self.to_DM_Broaden:
                     raise ValueError('Dispersion broadening not currently supported in explore mode.')
-                dummy_array[:] = self.signal[ii,:]
-                self.signal[ii,:] = utils.shift_t(dummy_array, self.time_delays[ii], use_pyfftw=use_pyfftw)
+                #dummy_array[:] = self.signal[ii,:]
+                self.signal[ii,:] = utils.shift_t(self.signal[ii,:], self.time_delays[ii], use_pyfftw=use_pyfftw)
                 if (ii+1) % int(self.Nf//20) ==0:
                     shift_check = time.time()
                     try: #Python 2 workaround. Python 2 __future__ does not have 'flush' kwarg.
@@ -94,13 +95,13 @@ class ISM(object):
                     sys.stdout.flush()
 
         elif self.Signal_in.SignalType=='voltage':
-            self.disperse_baseband()
+            self._disperse_baseband()
 
         self.ISM_Dict['dispersed'] = True
         self.Signal_in.MetaData.AddInfo(self.ISM_Dict)
 
 
-    def disperse_baseband(self):
+    def _disperse_baseband(self):
         """
         Broadens & delays baseband signal w transfer function defined in PSR Handbook, D. Lorimer and M. Kramer, 2006
         Returns a baseband signal dispersed by the ISM.
