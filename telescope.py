@@ -8,6 +8,7 @@ import numpy as np
 import scipy as sp
 from . import PSS_utils as utils
 
+_kB = 1.38064852e+03  # Boltzmann const in radio units: Jy m^2 / K 
 
 class Receiver(object):
     def __init__(self, centfreq, bandwidth, response=None, name=None):
@@ -65,9 +66,17 @@ class Backend(object):
 
 class Telescope(object):
     """contains: observe(), noise(), rfi() methods"""
-    def __init__(self, aperture, area=None, name=None):
+    def __init__(self, aperture, area=None, Tsys=None, name=None):
+        """initalize telescope object
+        aperture: aperture (m)
+        area: collecting area (m^2) (if omitted, assume circular single dish)
+        Tsys: system temp (K), total of receiver, sky, spillover, etc. (only needed for noise)
+        name: string
+        """
+        #TODO: specify Trec in Receiver and compute others from pointing
         self._name = name
         self._area = area
+        self._Tsys = Tsys
         self._aperture = aperture
         self._systems = {}
         if self._area is None:
@@ -83,6 +92,9 @@ class Telescope(object):
     @property
     def area(self):
         return self._area
+    @property
+    def Tsys(self):
+        return self._Tsys
     @property
     def aperture(self):
         return self._aperture
