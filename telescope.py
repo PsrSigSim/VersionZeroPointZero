@@ -80,6 +80,7 @@ class Telescope(object):
         self._aperture = aperture
         self._systems = {}
         if self._area is None:
+            # assume circular single dish
             self._area = np.pi * (aperture/2)**2
 
 
@@ -163,8 +164,12 @@ class Telescope(object):
 #TODO: should these be pre-instantiated?
 #TODO: check Receivear centfreq & bandwidth
 def GBT():
-    """The 100m Green Bank Telescope"""
-    g = Telescope(100, name="GBT")
+    """The 100m Green Bank Telescope
+    at ~1 GHz: effective area ~ 5500 m^2
+               Tsys ~ 35 K
+    see: http://www.gb.nrao.edu/~rmaddale/GBT/ReceiverPerformance/PlaningObservations.htm
+    """
+    g = Telescope(100.0, area=5500.0, Tsys=35.0, name="GBT")
     g.add_system(name="820_GUPPI",
                  receiver=Receiver(820, 180, name="820"),  # check me
                  backend=Backend(samprate=3.125, name="GUPPI"))
