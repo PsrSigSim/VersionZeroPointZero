@@ -50,7 +50,6 @@ class Pulsar(object):
         self.gauss_template()
 
         if self.SignalType == 'voltage':
-            self.profile = np.sqrt(self.profile)/np.sqrt(np.amax(self.profile)) # Corrects intensity pulse to voltage profile.
             gauss_limit = stats.norm.ppf(0.999, scale=self.gauss_draw_sigma)
             # Sets the limit so there is only a small amount of clipping because of dtype.
             self.gauss_draw_norm = self.Signal_in.MetaData.gauss_draw_max/gauss_limit
@@ -163,6 +162,9 @@ class Pulsar(object):
 
         self.PulsarDict["peak"] = peak
         self.PulsarDict["width"] = width
+        if self.SignalType == 'voltage':
+            self.profile = np.sqrt(self.profile)
+
 
     def user_template(self,template):
         """ Function to make any given 2-dimensional numpy array into the profile.
@@ -226,6 +228,10 @@ class Pulsar(object):
             #with positive-definite distributions for draws of pulses.
             self.profile = np.where(self.profile > 0, self.profile, self.profile-self.MinCheck)
             #TODO Message that you've shifted the array!
+        
+        if self.SignalType == 'voltage':
+            self.profile = np.sqrt(self.profile)
+
 
     def make_pulses(self, start_time = 0, stop_time = None):
         """Function that makes pulses using the defined profile template.
