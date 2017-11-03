@@ -125,36 +125,34 @@ class Telescope(object):
 
         elif dt_tel % dt_sig == 0:
             SampFactor = int(dt_tel // dt_sig)
-            out = np.zeros((signal.Nf,int(signal.Nt//SampFactor)))
+            new_Nt = int(signal.Nt//SampFactor)
+            out = np.zeros((signal.Nf, new_Nt))
             for ii, row in enumerate(sig_in):
                 out[ii,:] = utils.down_sample(row, SampFactor)
             print("Input signal sampling frequency= ", 1/dt_sig," kHz.\nTelescope sampling frequency = ",1/dt_tel," kHz")
 
         elif dt_tel > dt_sig:
-            NewLength = int(signal.TotTime // dt_tel)
-            out = np.zeros((signal.Nf, NewLength))
+            new_Nt = int(signal.TotTime // dt_tel)
+            out = np.zeros((signal.Nf, new_Nt))
             for ii, row in enumerate(sig_in):
-                out[ii,:] = utils.rebin(row, NewLength)
+                out[ii,:] = utils.rebin(row, new_Nt)
             print("Input signal sampling frequency= ", dt_sig," ms. Telescope sampling frequency = ",dt_tel," ms")
 
         else:
             # Throw error if the input signal has a lower sampling frequency than the telescope sampling frequency.
             raise ValueError("Signal Sampling Frequency Lower than Telescope Sampling Frequency")
 
-        Nt, Nf = out.shape
-
         if noise :
-            out += self.radiometer_noise(signal)
+            out += self.radiometer_noise(signal, out.shape)
 
         return out
 
-    def radiometer_noise(self, signal):
+    def radiometer_noise(self, signal, shape):
         # flux density fluctuations: sigS from Lorimer & Kramer eq 7.12
         #TODO replace A with Aeff, depends on pointing for some telescopes
         #TODO Tsys -> Trec, compute Tsky, Tspill, Tatm from pointing
         Tobs = signal.TotTime * 1.0e-3  # convert to sec
         BW = signal.bw  # MHz
-        Nt = signal.Nt
         Np = signal.Npols
         G = self.area / (Np*_kB)  # K/Jy (gain)
         
@@ -163,11 +161,11 @@ class Telescope(object):
         
         if signal.SignalType is 'voltage':
             norm = np.sqrt(sigS) * signal.MetaData.gauss_draw_norm/signal.MetaData.Smax
-            noise = norm * np.random.randn(Np, Nt)
+            noise = norm * np.random.normal(0, 1, shape)
         else:
             Nf = signal.Nf
             norm = sigS * signal.MetaData.gamma_draw_norm/signal.MetaData.Smax
-            noise = norm * np.random.chisquare(1, (Nf, Nt))
+            noise = norm * np.random.chisquare(1, shape)
 
         return noise
 
