@@ -322,3 +322,4 @@ class Pulsar(object):
             dph = self.phase[1] - self.phase[0]
             _Smax = Smean / (np.sum(pr) * dph)
 
+        return _Smax
