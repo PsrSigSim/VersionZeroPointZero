@@ -299,6 +299,7 @@ class Pulsar(object):
         self.signal[:,start_bin + N_periods_to_make * self.nBinsPeriod:start_bin + N_periods_to_make * self.nBinsPeriod + self.NLastPeriodBins] = self.LastPeriod
 
         self.PulsarDict['profile'] = self.profile
+        self.PulsarDict['Smax'] = Smax
         if self.mode == 'explore':
             self.PulsarDict['signal_pulsed'] = True
         if self.SignalType == 'intensity':
@@ -309,6 +310,7 @@ class Pulsar(object):
         elif self.SignalType == 'voltage':
             self.PulsarDict['gauss_draw_norm'] = self.gauss_draw_norm
             self.PulsarDict['gauss_draw_sigma'] = self.gauss_draw_sigma
+
         self.Signal_in.MetaData.AddInfo(self.PulsarDict)
 
     @property
