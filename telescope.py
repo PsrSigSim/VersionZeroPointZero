@@ -153,19 +153,18 @@ class Telescope(object):
         #TODO replace A with Aeff, depends on pointing for some telescopes
         #TODO Tsys -> Trec, compute Tsky, Tspill, Tatm from pointing
         Tobs = signal.TotTime * 1.0e-3  # convert to sec
-        G = self.area / _kB  # K/mJy (total gain, divide between polarization)
         BW = signal.bw  # MHz
+        Nt = signal.Nt
+        Np = signal.Npols
+        G = self.area / (Np*_kB)  # K/Jy (gain)
         
-        # noise variance per pol
+        # noise variance
         sigS = self.Tsys / G / np.sqrt(Np * Tobs * BW)  # mJy
         
         if SignalType is 'voltage':
-            Nt = signal.Nt
-            Np = signal.Npols
-            norm = sigS*Np * self.gauss_draw_norm/self.Smax
+            norm = np.sqrt(sigS) * self.gauss_draw_norm/self.Smax
             noise = norm * np.random.randn(Np, Nt)
         else:
-            Nt = signal.Nt
             Nf = signal.Nf
             norm = sigS * self.gamma_draw_norm/self.Smax
             noise = norm * np.random.chisquare(1, (Nf, Nt))
