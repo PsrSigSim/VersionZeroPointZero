@@ -227,7 +227,7 @@ def convolve_with_profile(pulsar_object,input_array):
         input_array_norm = input_array[ii,:] / input_array_sum
 
         #Convolving the input array with the pulse profile
-        convolved_prof = sp.convolve(pulsar_prof_norm, input_array_norm,"full")
+        convolved_prof = signal.convolve(pulsar_prof_norm, input_array_norm, mode='full',method='fft')
 
         #Renormalizing the convolved pulse profile
         pulsar_object.profile[ii,:] = (pulsar_prof_sum)*(convolved_prof[:width])
