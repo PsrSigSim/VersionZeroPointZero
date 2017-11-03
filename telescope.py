@@ -161,7 +161,7 @@ class Telescope(object):
         # noise variance
         sigS = self.Tsys / G / np.sqrt(Np * Tobs * BW)  # mJy
         
-        if SignalType is 'voltage':
+        if signal.SignalType is 'voltage':
             norm = np.sqrt(sigS) * self.gauss_draw_norm/self.Smax
             noise = norm * np.random.randn(Np, Nt)
         else:
