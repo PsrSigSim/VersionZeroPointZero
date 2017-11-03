@@ -229,6 +229,7 @@ class Pulsar(object):
             self.profile = np.where(self.profile > 0, self.profile, self.profile-self.MinCheck)
             #TODO Message that you've shifted the array!
         
+        self.profile /= self.profile.max()
         if self.SignalType == 'voltage':
             self.profile = np.sqrt(self.profile)
 
