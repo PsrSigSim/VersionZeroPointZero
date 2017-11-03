@@ -315,9 +315,10 @@ class Pulsar(object):
     def Smax(self):
         if not hasattr(self, '_Smax'):
             Smean = self.flux
+            if self.SignalType == 'voltage':
+                Smean = np.sqrt(Smean)
+
             pr = self.profile
             dph = self.phase[1] - self.phase[0]
             _Smax = Smean / (np.sum(pr) * dph)
-            if self.SignalType == 'voltage':
-                _Smax = np.sqrt(_Smax)
 
