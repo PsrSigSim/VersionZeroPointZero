@@ -310,3 +310,14 @@ class Pulsar(object):
             self.PulsarDict['gauss_draw_norm'] = self.gauss_draw_norm
             self.PulsarDict['gauss_draw_sigma'] = self.gauss_draw_sigma
         self.Signal_in.MetaData.AddInfo(self.PulsarDict)
+
+    @property
+    def Smax(self):
+        if not hasattr(self, '_Smax'):
+            Smean = self.flux
+            pr = self.profile
+            dph = self.phase[1] - self.phase[0]
+            _Smax = Smean / (np.sum(pr) * dph)
+            if self.SignalType == 'voltage':
+                _Smax = np.sqrt(_Smax)
+
