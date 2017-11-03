@@ -75,12 +75,14 @@ class Signal(object):
         elif SignalType == 'intensity' and data_type == 'int8':
             self.data_type = 'uint8'
             self.Nf = int(Nf)
+            self.Npols = int(1)
             rows = self.Nf
             self.SignalDict['gamma_draw_max'] = np.iinfo(np.uint8).max
 
         elif SignalType == 'intensity' and data_type == 'int16':
             self.data_type = 'uint16'
             self.Nf = int(Nf)
+            self.Npols = int(1)
             rows = self.Nf
             self.SignalDict['gamma_draw_max'] = np.iinfo(np.uint16).max
 
