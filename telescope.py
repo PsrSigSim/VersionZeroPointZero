@@ -162,13 +162,13 @@ class Telescope(object):
         if SignalType is 'voltage':
             Nt = signal.Nt
             Np = signal.Npols
-            norm = sigS*Np  # TODO!!! convert to "int counts"
-            noise = sigS*Np * np.random.randn(Np, Nt)
+            norm = sigS*Np * self.gauss_draw_norm/self.Smax
+            noise = norm * np.random.randn(Np, Nt)
         else:
             Nt = signal.Nt
             Nf = signal.Nf
-            norm = sigS  # TODO!!! convert to "int counts"
-            noise = sigS * np.random.chisquare(1, (Nf, Nt))
+            norm = sigS * self.gamma_draw_norm/self.Smax
+            noise = norm * np.random.chisquare(1, (Nf, Nt))
 
         return noise
 
