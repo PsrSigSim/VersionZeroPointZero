@@ -26,10 +26,12 @@ class Pulsar(object):
         self.bw = self.Signal_in.bw
         self.Nf = self.Signal_in.Nf
         self.Nt = self.Signal_in.Nt
+        self.Npols = self.Signal_in.Npols
         self.flux = flux
         self.SignalType = self.Signal_in.SignalType
         self.TotTime = self.Signal_in.TotTime
         self.TimeBinSize = self.Signal_in.TimeBinSize
+        self.freqBinSize = self.Signal_in.freqBinSize
         self.T = period
         self.mode = self.Signal_in.MetaData.mode
         self.nBinsPeriod = int(self.T//self.TimeBinSize)
@@ -319,9 +321,12 @@ class Pulsar(object):
             Smean = self.flux
             if self.SignalType == 'voltage':
                 Smean = np.sqrt(Smean)
+                norm = 1./self.Npols  # sum over polarizaitons
+            else:
+                norm = self.freqBinSize / self.bw  # sum over subbands
 
             pr = self.profile
             dph = self.phase[1] - self.phase[0]
-            _Smax = Smean / (np.sum(pr) * dph)
+            _Smax = Smean / (np.sum(pr) * dph * norm)
 
         return _Smax
