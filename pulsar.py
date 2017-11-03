@@ -299,7 +299,7 @@ class Pulsar(object):
         self.signal[:,start_bin + N_periods_to_make * self.nBinsPeriod:start_bin + N_periods_to_make * self.nBinsPeriod + self.NLastPeriodBins] = self.LastPeriod
 
         self.PulsarDict['profile'] = self.profile
-        self.PulsarDict['Smax'] = Smax
+        self.PulsarDict['Smax'] = self.Smax
         if self.mode == 'explore':
             self.PulsarDict['signal_pulsed'] = True
         if self.SignalType == 'intensity':
