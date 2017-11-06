@@ -144,6 +144,17 @@ class Telescope(object):
 
         if noise :
             out += self.radiometer_noise(signal, out.shape, dt_tel)
+        
+        if signal.SignalType == 'voltage':
+            clip = signal.MetaData.gauss_draw_max
+
+            out[out>clip] = clip
+            out[out<-clip] = -clip
+        else:
+            clip = signal.MetaData.gamma_draw_max
+            out[out>clip] = clip
+        
+        out = np.array(out, dtype=signal.MetaData.data_type)
 
         return out
 
