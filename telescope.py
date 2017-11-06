@@ -159,7 +159,13 @@ class Telescope(object):
         return out
 
     def radiometer_noise(self, signal, shape, dt):
-        # flux density fluctuations: sigS from Lorimer & Kramer eq 7.12
+        """compute radiometer white noise
+        signal -- signal object (needed for BW & Npol... should use telescope properties)
+        shape -- shape of output noise array (could probably be determined from telescope properties)
+        dt -- telescope sample rate in msec
+
+        flux density fluctuations: sigS from Lorimer & Kramer eq 7.12
+        """
         #TODO replace A with Aeff, depends on pointing for some telescopes
         #TODO Tsys -> Trec, compute Tsky, Tspill, Tatm from pointing
         dt *= 1.0e-3  # convert to sec
