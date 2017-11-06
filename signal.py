@@ -62,6 +62,7 @@ class Signal(object):
             self.Npols = int(4)
             self.Nf = int(Nf)
             self.SignalDict['gauss_draw_max'] = np.iinfo(np.int8).max
+            self.SignalDict['data_type'] = np.int8
             # Set the correct standard deviation for the
             # pulse draws depending on data type.
 
@@ -71,6 +72,7 @@ class Signal(object):
             self.Npols = int(4)
             self.Nf = int(Nf)
             self.SignalDict['gauss_draw_max'] = np.iinfo(np.int16).max
+            self.SignalDict['data_type'] = np.int16
 
         elif SignalType == 'intensity' and data_type == 'int8':
             self.data_type = 'uint8'
@@ -78,6 +80,7 @@ class Signal(object):
             self.Npols = int(1)
             rows = self.Nf
             self.SignalDict['gamma_draw_max'] = np.iinfo(np.uint8).max
+            self.SignalDict['data_type'] = np.uint8
 
         elif SignalType == 'intensity' and data_type == 'int16':
             self.data_type = 'uint16'
@@ -85,6 +88,7 @@ class Signal(object):
             self.Npols = int(1)
             rows = self.Nf
             self.SignalDict['gamma_draw_max'] = np.iinfo(np.uint16).max
+            self.SignalDict['data_type'] = np.uint16
 
         else:
             raise ValueError('Signal Type: '+SignalType+' and data type: '+data_type+' not supported together.')
