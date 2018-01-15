@@ -126,14 +126,20 @@ class Telescope(object):
         elif dt_tel % dt_sig == 0:
             SampFactor = int(dt_tel // dt_sig)
             new_Nt = int(signal.Nt//SampFactor)
-            out = np.zeros((signal.Nf, new_Nt))
+            if signal.SignalType == 'voltage':
+                out = np.zeros((signal.Npols, new_Nt))
+            else:
+                out = np.zeros((signal.Nf, new_Nt))
             for ii, row in enumerate(sig_in):
                 out[ii,:] = utils.down_sample(row, SampFactor)
             print("Input signal sampling frequency= ", 1/dt_sig," kHz.\nTelescope sampling frequency = ",1/dt_tel," kHz")
 
         elif dt_tel > dt_sig:
             new_Nt = int(signal.TotTime // dt_tel)
-            out = np.zeros((signal.Nf, new_Nt))
+            if signal.SignalType == 'voltage':
+                out = np.zeros((signal.Npols, new_Nt))
+            else:
+                out = np.zeros((signal.Nf, new_Nt))
             for ii, row in enumerate(sig_in):
                 out[ii,:] = utils.rebin(row, new_Nt)
             print("Input signal sampling frequency= ", dt_sig," ms. Telescope sampling frequency = ",dt_tel," ms")
