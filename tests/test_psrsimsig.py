@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Tests for `psrsimsig` package."""
+"""Tests for `psrsigsim` package."""
 
 import pytest
 import unittest
 
-import psrsimsig as PSS
+import psrsigsim as PSS
 
 
 @pytest.fixture

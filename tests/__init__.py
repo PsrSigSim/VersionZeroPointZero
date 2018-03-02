@@ -1,3 +1,3 @@
 # -*- coding: utf-8 -*-
 
-"""Unit test package for psrsimsig."""
+"""Unit test package for psrsigsim."""
