@@ -1,16 +1,16 @@
 =========
-PsrSimSig
+PsrSigSim
 =========
 
 
-.. image:: https://img.shields.io/pypi/v/psrsimsig.svg
-        :target: https://pypi.python.org/pypi/psrsimsig
+.. image:: https://img.shields.io/pypi/v/psrsigsim.svg
+        :target: https://pypi.python.org/pypi/psrsigsim
 
 .. image:: https://img.shields.io/travis/PsrSigSim/VersionZeroPointZero.svg
         :target: https://travis-ci.org/PsrSigSim/VersionZeroPointZero
 
-.. image:: https://readthedocs.org/projects/psrsimsig/badge/?version=latest
-        :target: https://psrsimsig.readthedocs.io/en/latest/?badge=latest
+.. image:: https://readthedocs.org/projects/psrsigsim/badge/?version=latest
+        :target: https://psrsigsim.readthedocs.io/en/latest/?badge=latest
         :alt: Documentation Status
 
 .. image:: https://pyup.io/repos/github/PsrSigSim/VersionZeroPointZero/shield.svg
@@ -22,7 +22,7 @@ The NANOGrav pulsar signal simulator.
 
 
 * Free software: MIT license
-* Documentation: https://psrsimsig.readthedocs.io.
+* Documentation: https://psrsigsim.readthedocs.io.
 
 This document serves as a summary of the **Pulsar Signal Simulator Working Group**’s plan for the first version of the simulator.
 In our first two meetings it was decided that the simulator will be written using ``Python 3.x`` (including imports from the ``__future__`` module for ``Python 2.7`` compatibility) and that a private GitHub page will be used for storing and collaborating on the code.

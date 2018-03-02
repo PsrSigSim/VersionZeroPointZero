@@ -30,19 +30,19 @@ test_requirements = [
 ]
 
 setup(
-    name='psrsimsig',
+    name='psrsigsim',
     version='0.1.0',
     description="The NANOGrav pulsar signal simulator.",
     long_description=readme + '\n\n' + history,
     author="Jeffrey S. Hazboun",
     author_email='jeffrey.hazboun@nanograv.org',
     url='https://github.com/PsrSigSim/VersionZeroPointZero',
-    packages=find_packages(include=['psrsimsig']),
+    packages=find_packages(include=['psrsigsim']),
     include_package_data=True,
     install_requires=requirements,
     license="MIT license",
     zip_safe=False,
-    keywords='psrsimsig',
+    keywords='psrsigsim',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Developers',
