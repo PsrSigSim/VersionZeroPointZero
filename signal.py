@@ -54,22 +54,40 @@ class Signal(object):
 
     extended summary if necessary
 
+    Parameters
+    ----------
+    mode : {'explore', 'simulation'}, optional
+        'explore' mode to add effects individually.
+        'simulation' to add selected effects at once.
+
     Attributes
     ----------
+    MetaData : instance
+        Instance of metadata class inherited to store signal parameters
     f0 : int
         Central frequency (MHz).
     bw : int
         Bandwidth (MHz).
-    Nf : int
-        Number of frequency bins.
-    Nt : int
-        Number of time/phase bins.
-    TotTime : int
-        Total observation time in milliseconds.
     data_type : str
         Data type to store signal data with. 'int8' or 'int16' supported.
     SignalType : str
         Signal type (only either 'intensity' or 'voltage').
+    SignalDict
+    Nt : int
+        Number of time/phase bins.
+    Npols
+    Nf : int
+        Number of frequency bins.
+    TotTime : int
+        Total observation time in milliseconds.
+    TimeBinSize
+    freqBinSize
+    first_freq
+    last_freq
+    freq_array
+    signal
+
+
     mode : str
         Mode used to simulate effects. 'explore' to add effects individually.
         'simulation' to add selected effects at once.
