@@ -13,15 +13,15 @@ class MetaData(object):
 
     Attributes
     ----------
-    f0 : int
+    f0 : float
         Central frequency of bandwidth (MHz)
-    bw : int
+    bw : float
         Bandwidth (MHz)
     Nf : int
         Number of frequency bins
     Nt : int
         Number of time/phase bins
-    TotTime : int
+    TotTime : float
         Total observation time in milliseconds
     """
     def __init__(self):
@@ -64,9 +64,9 @@ class Signal(object):
     ----------
     MetaData : instance
         Instance of metadata class inherited to store signal parameters
-    f0 : int
+    f0 : float
         Central frequency (MHz).
-    bw : int
+    bw : float
         Bandwidth (MHz).
     data_type : str
         Data type to store signal data with. 'int8' or 'int16' supported.
@@ -80,12 +80,20 @@ class Signal(object):
         Number of frequency bins.
     TotTime : int
         Total observation time in milliseconds.
-    TimeBinSize
-    freqBinSize
-    first_freq
-    last_freq
-    freq_array
-    signal
+    TimeBinSize : float
+        Length of each time/phase bin in milliseconds.
+    freqBinSize : float
+        Length of each frequency bin (MHz).
+    first_freq : float
+        First/lowest bandwidth frequency (MHz).
+    last_freq : float
+        Last/highest bandwidth frequency (MHz).
+    freq_Array : array_like
+        Array of frequencies of length Nf within bandwidth, excluding frequencies
+        at both extremes of bandwidth.
+    signal : array_like
+        2d numpy array to store signal data. If data size exceeds 2.048GB, data is
+        stored as HDF5 file.
 
 
     mode : str
