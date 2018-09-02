@@ -72,10 +72,11 @@ class Signal(object):
         Data type to store signal data with. 'int8' or 'int16' supported.
     SignalType : str
         Signal type (only either 'intensity' or 'voltage').
-    SignalDict
+    SignalDict : dict
+        Dictionary of signal parameters which is added to metadata.
     Nt : int
         Number of time/phase bins.
-    Npols
+    Npols :
     Nf : int
         Number of frequency bins.
     TotTime : int
@@ -94,11 +95,6 @@ class Signal(object):
     signal : array_like
         2d numpy array to store signal data. If data size exceeds 2.048GB, data is
         stored as HDF5 file.
-
-
-    mode : str
-        Mode used to simulate effects. 'explore' to add effects individually.
-        'simulation' to add selected effects at once.
     """
     def __init__(self, f0=1400, bw=400, Nf=20, Nt=1000, TotTime=200, data_type='int8', SignalType = "intensity", mode='explore'):
         """initialize Signal(), executed at assignment of new instance
@@ -187,6 +183,18 @@ class Signal(object):
 
     ### Plotting Methods
     def pulse_plot(self, **kwargs):
+        """Method to plot the pulse signal
+
+        Parameters
+        ----------
+        **kwargs
+        For other keyword-only arguments, see pulse_plot() in PSS_plot.py.
+
+        Returns
+        -------
+        lines
+            A pulse plot with specified axes.
+        """
         return PSS_plot.pulse_plot(self, **kwargs)
 
     def filter_bank(self, **kwargs):
