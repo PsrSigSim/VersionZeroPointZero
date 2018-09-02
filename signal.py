@@ -52,9 +52,7 @@ class MetaData(object):
 
 
 class Signal(object):
-    """The Signal class to c
-
-    extended summary if necessary
+    """The Signal class to contain signal parameters and data.
 
     Parameters
     ----------
