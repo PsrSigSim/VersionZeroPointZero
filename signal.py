@@ -9,7 +9,20 @@ import h5py
 from . import PSS_plot
 
 class MetaData(object):
-    """the MetaData class to contain information about the signal
+    """The MetaData class to contain information about the signal
+
+    Attributes
+    ----------
+    f0 : int
+        Central frequency of bandwidth (MHz)
+    bw : int
+        Bandwidth (MHz)
+    Nf : int
+        Number of frequency bins
+    Nt : int
+        Number of time/phase bins
+    TotTime : int
+        Total observation time in milliseconds
     """
     def __init__(self):
         self.f0 = None # central freq (MHz)
@@ -19,9 +32,15 @@ class MetaData(object):
         self.TotTime = None #Total time in milliseconds
 
     def AddInfo(self,Info):
-        """Function to Add Information into the metadata from a dictionary
-            Since each new module will have a dictionary of terms to
-            add in to the metadata
+        """Function to add a dictionary of information into the metadata.
+
+        Necessary since each new module will have a dictionary of terms to add in
+        to the metadata
+
+        Parameters
+        ----------
+        Info : dict
+            A dictionary containing signal parameters to be added to metadata.
         """
         for ii,jj in Info.items():
             setattr(self, ii, jj)
@@ -31,7 +50,29 @@ class MetaData(object):
 
 
 class Signal(object):
-    """The signal class
+    """The Signal class to c
+
+    extended summary if necessary
+
+    Attributes
+    ----------
+    f0 : int
+        Central frequency (MHz).
+    bw : int
+        Bandwidth (MHz).
+    Nf : int
+        Number of frequency bins.
+    Nt : int
+        Number of time/phase bins.
+    TotTime : int
+        Total observation time in milliseconds.
+    data_type : str
+        Data type to store signal data with. 'int8' or 'int16' supported.
+    SignalType : str
+        Signal type (only either 'intensity' or 'voltage').
+    mode : str
+        Mode used to simulate effects. 'explore' to add effects individually.
+        'simulation' to add selected effects at once.
     """
     def __init__(self, f0=1400, bw=400, Nf=20, Nt=1000, TotTime=200, data_type='int8', SignalType = "intensity", mode='explore'):
         """initialize Signal(), executed at assignment of new instance
