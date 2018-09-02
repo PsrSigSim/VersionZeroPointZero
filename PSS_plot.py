@@ -69,7 +69,7 @@ def pulse_plot(signal_object, N_pulses=1, pol_bin=0, freq_bin=0, start_time=0, p
     """N_pulses : int, optional
             Number of pulses to plot.
         pol_bin : int, optional
-
+        ????????
         freq_bin : int, optional
             Number of frequency bins.
         start_time : float, optional

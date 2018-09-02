@@ -1,5 +1,7 @@
 """pulsar.py
 a starting point for the Pulsar class.
+
+I NEED TO ALSO DOCUMENT MODULE
 """
 
 from __future__ import (absolute_import, division,
@@ -76,7 +78,8 @@ class Signal(object):
         Dictionary of signal parameters which is added to metadata.
     Nt : int
         Number of time/phase bins.
-    Npols :
+    Npols : int
+    ???????
     Nf : int
         Number of frequency bins.
     TotTime : int
@@ -188,7 +191,7 @@ class Signal(object):
         Parameters
         ----------
         **kwargs
-        For other keyword-only arguments, see pulse_plot() in PSS_plot.py.
+            For other keyword-only arguments, see pulse_plot() in PSS_plot.py.
 
         Returns
         -------
@@ -198,9 +201,33 @@ class Signal(object):
         return PSS_plot.pulse_plot(self, **kwargs)
 
     def filter_bank(self, **kwargs):
+        """Method to produce filter bank plot
+
+        Parameters
+        ----------
+        **kwargs
+            For other keyword-only arguments, see filter_bank() in PSS_plot.py
+
+        Returns
+        -------
+        lines
+            A filter bank plot with specified axes.
+        """
         return PSS_plot.filter_bank(self, **kwargs)
 
     def profile_plot(self, **kwargs):
+        """Method to plot the pulse profile template
+
+        Parameters
+        ----------
+        **kwargs
+            For other keyword-only arguments, see profile_plot() in PSS_plot.py.
+
+        Returns
+        -------
+        lines
+            A pulse profile template plot with specified axes.
+        """
         return PSS_plot.profile_plot(self, **kwargs)
 
     #Set the signal parameters as properties and assign them to the MetaData
