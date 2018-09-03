@@ -1,12 +1,4 @@
-"""Signal.py, containing Signal class an
-extended summary
-routine listings
-see also
-notes
-references
-examples
-I NEED TO ALSO DOCUMENT MODULE, mention properties added to metadata
-"""
+"""signal.py, a starting point for pulsar signal simulation."""
 
 from __future__ import (absolute_import, division,
                         print_function, unicode_literals)
@@ -17,7 +9,7 @@ from . import PSS_plot
 class MetaData(object):
     """The MetaData class to contain information about signal.
 
-    Information is continuously added to metadata attributes via dictionaries
+    Information is continuously added to metadata via dictionaries
     from other modules.
 
     Attributes
@@ -42,9 +34,6 @@ class MetaData(object):
 
     def AddInfo(self,Info):
         """Function to add a dictionary of information into the metadata.
-
-        Necessary since each new module will have a dictionary of terms to add in
-        to the metadata
 
         Parameters
         ----------
@@ -98,21 +87,10 @@ class Signal(object):
         Array of frequencies of length Nf within bandwidth, excluding frequencies
         at both extremes of bandwidth.
     signal : array_like
-        2d numpy array to store signal data. If data size exceeds 2.048GB, data is
-        stored as HDF5 file.
+        2d numpy array to store signal data.
+        If data size exceeds 2.048GB, data is stored as HDF5 file.
     """
     def __init__(self, f0=1400, bw=400, Nf=20, Nt=1000, TotTime=200, data_type='int8', SignalType = "intensity", mode='explore'):
-        """initialize Signal(), executed at assignment of new instance
-        data_type = 'int8' or 'int16' supported.
-                    Automatically changed to 'uint8' or 'uint16' if intensity signal.
-        @param f0 -- central frequency (MHz)
-        @param bw -- bandwidth (MHz)
-        @param Nf -- number of freq. bins
-        @param Nt -- number of phase bins
-        Totime = total time of the observation in milliseconds
-        SignalType = 'intensity' which carries a Nf x Nt filterbank of pulses or 'voltage'
-                    which carries a 4 x Nt array of voltage vs. time pulses representing 4 stokes channels
-        """
         self.MetaData = MetaData()
         self.f0 = f0 # (MHz)
         self.bw = bw # (MHz)
@@ -295,7 +273,10 @@ class Signal(object):
     @property
 
     def data_type(self):
-        """Property data_type, 'int8' or 'int16' supported."""
+        """Property data_type, 'int8' or 'int16' supported.
+
+        Automatically changed to 'uint8' or 'uint16' if intensity signal.
+        """
         return self._data_type
 
     @data_type.setter
@@ -306,7 +287,12 @@ class Signal(object):
     @property
 
     def SignalType(self):
-        """Property SignalType, either 'intensity' or 'voltage'."""
+        """Property SignalType, either 'intensity' or 'voltage'.
+
+        'intensity' carries a Nf x Nt filter bank of pulses or
+        'voltage' which carries a 4 x Nt array of voltage vs. time pulses
+        representing 4 stokes channels
+        """
         return self._SignalType
 
     @SignalType.setter
