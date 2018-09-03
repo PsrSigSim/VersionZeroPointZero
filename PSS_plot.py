@@ -66,19 +66,6 @@ def joy_division_profiles(pulsar_object, step=1, N=10,Title='Profile by Frequenc
     plt.close()
 
 def pulse_plot(signal_object, N_pulses=1, pol_bin=0, freq_bin=0, start_time=0, phase=False, **kwargs):
-    """N_pulses : int, optional
-            Number of pulses to plot.
-        pol_bin : int, optional
-        ????????
-        freq_bin : int, optional
-            Number of frequency bins.
-        start_time : float, optional
-            Starting time value of pulse plot in milliseconds.
-        phase : bool, optional
-            'True' to plot as function of phase.
-            'False' to plot as function of time (ms).
-
-    """
     try:
         nBins_per_period = int(signal_object.MetaData.pulsar_period//signal_object.TimeBinSize)
     except:
