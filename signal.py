@@ -15,15 +15,15 @@ class MetaData(object):
     Attributes
     ----------
     f0 : float
-        Central frequency of bandwidth (MHz)
+        Central frequency of bandwidth (MHz).
     bw : float
-        Bandwidth (MHz)
+        Bandwidth (MHz).
     Nf : int
-        Number of frequency bins
+        Number of frequency bins.
     Nt : int
-        Number of time/phase bins
+        Number of time/phase bins.
     TotTime : float
-        Total observation time in milliseconds
+        Total observation time in milliseconds.
     """
     def __init__(self):
         self.f0 = None # central freq (MHz)
@@ -70,7 +70,7 @@ class Signal(object):
     data_type
     SignalType
     MetaData : instance
-        Instance of metadata class inherited to store signal parameters
+        Instance of metadata class inherited to store signal parameters.
     SignalDict : dict
         Dictionary of signal parameters which is added to metadata.
     Npols : int
@@ -166,7 +166,7 @@ class Signal(object):
 
     ### Plotting Methods
     def pulse_plot(self, **kwargs):
-        """Method to plot the pulse signal
+        """Method to plot the pulse signal.
 
         Parameters
         ----------
@@ -182,12 +182,12 @@ class Signal(object):
         return PSS_plot.pulse_plot(self, **kwargs)
 
     def filter_bank(self, **kwargs):
-        """Method to produce filter bank plot
+        """Method to produce filter bank plot.
 
         Parameters
         ----------
         **kwargs
-            For other keyword-only arguments, see filter_bank() in PSS_plot.py
+            For other keyword-only arguments, see filter_bank() in PSS_plot.py.
 
         Returns
         -------
@@ -198,7 +198,7 @@ class Signal(object):
         return PSS_plot.filter_bank(self, **kwargs)
 
     def profile_plot(self, **kwargs):
-        """Method to plot the pulse profile template
+        """Method to plot the pulse profile template.
 
         Parameters
         ----------
