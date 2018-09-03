@@ -1,7 +1,7 @@
 """pulsar.py
 a starting point for the Pulsar class.
 
-I NEED TO ALSO DOCUMENT MODULE
+I NEED TO ALSO DOCUMENT MODULE, mention properties added to metadata
 """
 
 from __future__ import (absolute_import, division,
@@ -62,26 +62,19 @@ class Signal(object):
 
     Attributes
     ----------
+    f0
+    bw
+    Nf
+    Nt
+    TotTime
+    data_type
+    SignalType
     MetaData : instance
         Instance of metadata class inherited to store signal parameters
-    f0 : float
-        Central frequency (MHz).
-    bw : float
-        Bandwidth (MHz).
-    data_type : str
-        Data type to store signal data with. 'int8' or 'int16' supported.
-    SignalType : str
-        Signal type (only either 'intensity' or 'voltage').
     SignalDict : dict
         Dictionary of signal parameters which is added to metadata.
-    Nt : int
-        Number of time/phase bins.
     Npols : int
-    ???????
-    Nf : int
-        Number of frequency bins.
-    TotTime : int
-        Total observation time in milliseconds.
+        Number of polarizations.
     TimeBinSize : float
         Length of each time/phase bin in milliseconds.
     freqBinSize : float
@@ -233,6 +226,7 @@ class Signal(object):
     @property
 
     def f0(self):
+        """Property f0, central frequency (MHz)."""
         return self._f0
 
     @f0.setter
@@ -243,6 +237,7 @@ class Signal(object):
     @property
 
     def bw(self):
+        """Property bw, bandwidth (MHz)."""
         return self._bw
 
     @bw.setter
@@ -253,6 +248,7 @@ class Signal(object):
     @property
 
     def Nf(self):
+        """Property Nf, number of frequency bins."""
         return self._Nf
 
     @Nf.setter
@@ -263,6 +259,7 @@ class Signal(object):
     @property
 
     def Nt(self):
+        """Property Nt, number of time/phase bins."""
         return self._Nt
 
     @Nt.setter
@@ -273,6 +270,7 @@ class Signal(object):
     @property
 
     def TotTime(self):
+        """Property TotTime, total observation time in milliseconds."""
         return self._TotTime
 
     @TotTime.setter
@@ -283,6 +281,7 @@ class Signal(object):
     @property
 
     def data_type(self):
+        """Property data_type, 'int8' or 'int16' supported."""
         return self._data_type
 
     @data_type.setter
@@ -293,6 +292,7 @@ class Signal(object):
     @property
 
     def SignalType(self):
+        """Property SignalType, either 'intensity' or 'voltage'."""
         return self._SignalType
 
     @SignalType.setter
