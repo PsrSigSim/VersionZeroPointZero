@@ -1,6 +1,10 @@
-"""pulsar.py
-a starting point for the Pulsar class.
-
+"""Signal.py, containing Signal class an
+extended summary
+routine listings
+see also
+notes
+references
+examples
 I NEED TO ALSO DOCUMENT MODULE, mention properties added to metadata
 """
 
@@ -11,7 +15,10 @@ import h5py
 from . import PSS_plot
 
 class MetaData(object):
-    """The MetaData class to contain information about the signal
+    """The MetaData class to contain information about signal.
+
+    Information is continuously added to metadata attributes via dictionaries
+    from other modules.
 
     Attributes
     ----------
@@ -52,7 +59,11 @@ class MetaData(object):
 
 
 class Signal(object):
-    """The Signal class to contain signal parameters and data.
+    """The Signal class to contain metadata of parameters and signal data.
+
+    Additional parameter information about signal is added to metadata,
+    some as properties, and either a NumPy 2d-array or HDF5 file is created to
+    store signal data.
 
     Parameters
     ----------
@@ -187,7 +198,8 @@ class Signal(object):
         Returns
         -------
         lines
-            A pulse plot with specified axes.
+            A pulse plot with specified axes. Y-axis can be intensity or voltage.
+            X-axis can be time (ms) or phase.
         """
         return PSS_plot.pulse_plot(self, **kwargs)
 
@@ -202,7 +214,8 @@ class Signal(object):
         Returns
         -------
         lines
-            A filter bank plot with specified axes.
+            A filter bank plot with specified X-axis, which can be a function of
+            time (ms) or phase.
         """
         return PSS_plot.filter_bank(self, **kwargs)
 
@@ -217,7 +230,8 @@ class Signal(object):
         Returns
         -------
         lines
-            A pulse profile template plot with specified axes.
+            A pulse profile template plot with specified axes. Y-axis can be intensity
+            or voltage. X-axis can be time (ms) or phase.
         """
         return PSS_plot.profile_plot(self, **kwargs)
 
