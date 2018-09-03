@@ -1,4 +1,4 @@
-"""signal.py, a starting point for pulsar signal simulation."""
+"""signal.py, a starting point for the pulsar class."""
 
 from __future__ import (absolute_import, division,
                         print_function, unicode_literals)
@@ -7,7 +7,7 @@ import h5py
 from . import PSS_plot
 
 class MetaData(object):
-    """The MetaData class to contain information about signal.
+    """The MetaData class to contain information about the signal.
 
     Information is continuously added to metadata via dictionaries
     from other modules.
