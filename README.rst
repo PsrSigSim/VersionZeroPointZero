@@ -12,10 +12,10 @@ PsrSigSim
 .. image:: https://readthedocs.org/projects/psrsigsim/badge/?version=latest
         :target: https://psrsigsim.readthedocs.io/en/latest/?badge=latest
         :alt: Documentation Status
-
-.. image:: https://pyup.io/repos/github/PsrSigSim/PsrSigSim/shield.svg
-     :target: https://pyup.io/repos/github/PsrSigSim/PsrSigSim
-     :alt: Updates
+..  THIS COMMENTS OUT THE pyup badge
+ .. image:: https://pyup.io/repos/github/PsrSigSim/PsrSigSim/shield.svg
+      :target: https://pyup.io/repos/github/PsrSigSim/PsrSigSim
+      :alt: Updates
 
 
 The NANOGrav pulsar signal simulator.
