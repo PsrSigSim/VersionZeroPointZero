@@ -6,15 +6,15 @@ PsrSigSim
 .. image:: https://img.shields.io/pypi/v/psrsigsim.svg
         :target: https://pypi.python.org/pypi/psrsigsim
 
-.. image:: https://img.shields.io/travis/PsrSigSim/VersionZeroPointZero.svg
-        :target: https://travis-ci.org/PsrSigSim/VersionZeroPointZero
+.. image:: https://img.shields.io/travis/PsrSigSim/PsrSigSim.svg
+        :target: https://travis-ci.org/PsrSigSim/PsrSigSim
 
 .. image:: https://readthedocs.org/projects/psrsigsim/badge/?version=latest
         :target: https://psrsigsim.readthedocs.io/en/latest/?badge=latest
         :alt: Documentation Status
 
-.. image:: https://pyup.io/repos/github/PsrSigSim/VersionZeroPointZero/shield.svg
-     :target: https://pyup.io/repos/github/PsrSigSim/VersionZeroPointZero
+.. image:: https://pyup.io/repos/github/PsrSigSim/PsrSigSim/shield.svg
+     :target: https://pyup.io/repos/github/PsrSigSim/PsrSigSim
      :alt: Updates
 
 
