@@ -43,6 +43,8 @@ class Receiver(object):
 
         self._Trec = make_quant(Trec, "K")
         self._name = name
+        self._fcent = make_quant(fcent, "MHz")
+        self._bandwidth = make_quant(bandwidth, "MHz")
 
     def __repr__(self):
         return "Receiver({:s})".format(self._name)
@@ -58,6 +60,14 @@ class Receiver(object):
     @property
     def response(self):
         return self._response
+    
+    @property
+    def fcent(self):
+        return self._fcent
+    
+    @property
+    def bandwidth(self):
+        return self._bandwidth
 
     def radiometer_noise(self, signal, gain=1, Tsys=None, Tenv=None):
         """add radiometer noise to a signal
@@ -75,6 +85,9 @@ class Receiver(object):
             else:
                 Tsys = Tenv + self.Trec
         # else: Tsys given as input!
+        
+        # gain by this equation should have units of K/Jy
+        gain = make_quant(gain, "K/Jy")
 
         # select noise generation method
         if signal.sigtype in ["RFSignal", "BasebandSignal"]:
@@ -104,7 +117,10 @@ class Receiver(object):
     def _make_pow_noise(self, signal, Tsys, gain):
         """radiometer noise for power signals
         """
-        dt = 1 / signal.samprate
+        if signal.subint:
+            dt = signal.sublen / (signal.nsamp/signal.nsub) # bins per subint; s
+        else:
+            dt = 1 / signal.samprate
         bw_per_chan = signal.bw / signal.Nchan
 
         # noise variance

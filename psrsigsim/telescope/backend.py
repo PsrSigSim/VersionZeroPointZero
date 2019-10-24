@@ -3,14 +3,15 @@ from __future__ import (absolute_import, division,
                         print_function, unicode_literals)
 import numpy as np
 
-from ..utils.utils import down_sample, rebin
+from ..utils.utils import down_sample, rebin, make_quant
 
 __all__ = ['Backend']
 
 class Backend(object):
     def __init__(self, samprate=None, name=None):
         self._name = name
-        self._samprate = samprate
+        # Should be in MHz
+        self._samprate = make_quant(samprate, "MHz")
 
     def __repr__(self):
         return "Backend({:s})".format(self._name)

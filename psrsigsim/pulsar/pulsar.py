@@ -4,6 +4,8 @@ from __future__ import (absolute_import, division,
 import numpy as np
 from scipy import stats
 from .profiles import GaussProfile
+from .profiles import UserProfile
+from .profiles import DataProfile
 from ..utils.utils import make_quant
 
 class Pulsar(object):
@@ -25,7 +27,8 @@ class Pulsar(object):
         self._intensity = make_quant(intensity, 'Jy')
 
         self._name = name
-
+        
+        # Assign profile class; default to GaussProfile if nothing is specified
         if profile is None:
             self._Profile = GaussProfile()
         else:
@@ -115,10 +118,23 @@ class Pulsar(object):
             signal (:class:`Signal`-like): signal object to store pulses
         """
         if signal.subint:
-            # generate one pulse in phase
-            sngl_prof = self.Profile()
-
-            signal._Nfold = (signal.tobs / self.period).decompose()
+            # Determine how many subints to make
+            if signal.sublen != None:
+                # This should be an integer, if not, will round
+                signal._nsub = int(np.round(signal.tobs / signal.sublen))
+            else:
+                signal.sublen = signal.tobs
+                signal._nsub = 1
+            
+            # determine the number of data samples necessary
+            signal._nsamp = int((signal.nsub*(self.period*signal.samprate)).decompose())
+            # Need to make an initial empty data array
+            signal.init_data(signal.nsamp)
+            
+            # Tile the profiles to number of desired subints
+            sngl_prof = np.tile(self.Profile(), signal.nsub)
+            # changed to number of subints
+            signal._Nfold = (signal.sublen / self.period).decompose()
             distr = stats.chi2(df=signal.Nfold)
             signal._set_draw_norm(df=signal.Nfold)
 
@@ -130,13 +146,13 @@ class Pulsar(object):
             distr = stats.chi2(df=1)
             signal._set_draw_norm(df=1)
 
-            Nsamp = int((signal.tobs * signal.samprate).decompose())
-            signal.init_data(Nsamp)
+            signal._nsamp = int((signal.tobs * signal.samprate).decompose())
+            signal.init_data(signal.nsamp)
 
             # TODO break into blocks
             # TODO phase from .par file
             # calc profile at phases
-            phs = (np.arange(Nsamp) /
+            phs = (np.arange(signal.nsamp) /
                    (signal.samprate * self.period).decompose().value)
             phs %= 1  # clip integer part
             full_prof = self.Profile.calc_profile(phs)

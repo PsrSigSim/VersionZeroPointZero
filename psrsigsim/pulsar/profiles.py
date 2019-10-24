@@ -128,7 +128,7 @@ class UserProfile(PulseProfile):
     """user specified pulse profile
 
     :class:`UserProfile`s are specified by a function used to compute the
-    profile at arbitrary pulse phase. If you want ot generate a profile
+    profile at arbitrary pulse phase. If you want to generate a profile
     from empirical data, use :class:`DataProfile`.
 
     Required Args:

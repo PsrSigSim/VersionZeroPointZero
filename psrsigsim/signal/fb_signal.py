@@ -2,6 +2,7 @@
 from __future__ import (absolute_import, division,
                         print_function, unicode_literals)
 import numpy as np
+from scipy import stats
 
 from .signal import BaseSignal
 from ..utils.utils import make_quant
@@ -33,6 +34,11 @@ class FilterBankSignal(BaseSignal):
             for coherently dedispersed filter banks using XUPPI backends.
 
         subint [bool]: is this a folded subintegration, default ``False``
+        
+        sublen [float]: desired length of data subintegration (sec) if subint
+            is ``True``, default: ``tobs``. If left as none but subint is 
+            ``True``, then when pulses are made, the sublen will default to 
+            the input observation length, ``tobs``
 
         dtype [type]: data type of array, default: ``np.float32``
             supported types are: ``np.float32`` and ``np.int8``
@@ -51,18 +57,26 @@ class FilterBankSignal(BaseSignal):
                  Nsubband=512,
                  sample_rate=None,
                  subint=False,
+                 sublen=None,
                  dtype=np.float32):
 
         self._fcent = make_quant(fcent, 'MHz')
         self._bw = make_quant(bandwidth, 'MHz')
 
         self._subint = subint
-
+        if self.subint:
+            self._sublen = make_quant(sublen, 's')
+        else:
+            self._sublen = sublen
+        
+        f_Nyquist = 2 * self._bw # Not sure if we need this for subintegrated data
         if sample_rate is None:
             self._samprate = (1/make_quant(20.48, 'us')).to('MHz')
         else:
+            # This seems unnecessary for subintegrated data, we don't need that resolution if period is known
             self._samprate = make_quant(sample_rate, 'MHz')
-
+                
+        # Determine frequency array if not loaded from fitsfile
         self._Nchan = Nsubband
         first = (self._fcent - self._bw/2).to('MHz').value
         last = (self._fcent + self._bw/2).to('MHz').value
@@ -84,10 +98,22 @@ class FilterBankSignal(BaseSignal):
     @property
     def subint(self):
         return self._subint
+    
+    @property
+    def sublen(self):
+        return self._sublen
 
     @property
     def Nfold(self):
         return self._Nfold
+    
+    @property
+    def nsub(self):
+        return self._nsub
+    
+    @property
+    def nsamp(self):
+        return self._nsamp
 
     def to_RF(self):
         """convert signal to RFSignal

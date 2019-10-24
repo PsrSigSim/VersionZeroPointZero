@@ -6,11 +6,19 @@ from __future__ import (absolute_import, division,
 import numpy as np
 import pdat
 from .file import BaseFile
-from ..PSS_utils import make_quant
+from ..utils import make_quant
 from ..signal import Signal
+from ..signal import FilterBankSignal
+
+__all__ = ["PSRFITS"]
 
 class PSRFITS(BaseFile):
     """A class for saving PsrSigSim signals as PSRFITS standard files.
+    path: name and path of new psrfits file that will be saved
+    obs_mode: what type of observation is the data, SEARCH, PSR, etc. 
+    template: the path and name of the template fits file that will be loaded
+    copy_template: Does nothing?
+    fits_mode: how we want to save the data, right now just 'copy' is valid
     """
 
     def __init__(self, path=None, obs_mode=None, template=None,
@@ -50,7 +58,10 @@ class PSRFITS(BaseFile):
                                      'OBSFREQ',
                                      'OBSBW',
                                      'OBSNCHAN',
-                                     'FD_POLN'],
+                                     'FD_POLN',
+                                     'STT_IMJD',
+                                     'STT_SMJD',
+                                     'STT_OFFS'],
                           'SUBINT':['TBIN',
                                     'NAXIS',
                                     'NAXIS1',
@@ -61,7 +72,11 @@ class PSRFITS(BaseFile):
                                     'NBIN',
                                     'NBITS',
                                     'CHAN_BW',
-                                    'NSBLK',]
+                                    'NSBLK',
+                                    'DAT_SCL',
+                                    'DAT_OFFS',
+                                    'DAT_WTS',
+                                    "TSUBINT",] # TTYPE2 is the subint length
                            }
 
         #Might not need this, since we can calculate from other terms.
@@ -73,12 +88,18 @@ class PSRFITS(BaseFile):
     def save(self, signal):
         """Save PSS signal file to disk.
         """
+        """
+        # May come back to this later...
         if self._fits_mode == 'copy':
             pass
         elif self._fits_mode == 'manual':
             pass
         elif self._fits_mode == 'auto':
             pass
+        """
+        # We can only save single polarization
+        self.file.set_draft_header('SUBNT',{'POL_TYPE':'AA+BB'})
+        
 
         raise NotImplementedError()
 
@@ -107,12 +128,15 @@ class PSRFITS(BaseFile):
         """
         self._fits_mode = 'copy'
         self._get_signal_params()
-
-        ObsTime = self.tbin*self.nbin*self.nsblk*self.nrows
+        
+        if self.obs_mode == 'PSR':
+            ObsTime = self.tsubint*self.nrows
+        else:
+            ObsTime = self.tbin*self.nbin*self.nsblk*self.nrows
 
         #TODO Delete calls to .value when integrated with new API.
         #TODO Change call to FilterBank for new API.
-        S = Signal(f0=self.obsfreq.value,
+        """S = Signal(f0=self.obsfreq.value,
                    bw=self.obsbw.value,
                    Nf=self.nchan,
                    f_samp=(1/self.tbin).to('MHz').value,
@@ -121,6 +145,15 @@ class PSRFITS(BaseFile):
                    SignalType='intensity',
                    mode='simulate',
                    clean_mode=True)
+        """
+        S = FilterBankSignal(fcent=self.obsfreq.value,
+                   bandwidth=self.obsbw.value,
+                   Nsubband=self.nchan,
+                   sample_rate=(1/self.tbin).to('MHz').value,
+                   #ObsTime=ObsTime.to('ms').value,
+                   dtype=np.float32,
+                   subint=True,
+                   sublen=self.tsubint)
 
         S.freq_Array = self._get_pfit_bin_table_entry('SUBINT', 'DAT_FREQ')
 
@@ -205,8 +238,14 @@ class PSRFITS(BaseFile):
         self.obsfreq = self.pfit_dict['OBSFREQ']
         self.obsbw = self.pfit_dict['OBSBW']
         self.chan_bw = self.pfit_dict['CHAN_BW']
-
-        self.nsubint = self.nrows
+        self.stt_imjd = self.pfit_dict['STT_IMJD'] # start MJD of obs
+        self.stt_smjd = self.pfit_dict['STT_SMJD'] # start second of obs
+        self.tsubint = self.pfit_dict['TSUBINT'] # length of subint in seconds
+        
+        if self.obs_mode=='PSR':
+            self.nsubint = self.nrows
+        else:
+            self.nsubint = None
 
 
     def _make_psrfits_pars_dict(self):
@@ -218,7 +257,12 @@ class PSRFITS(BaseFile):
 
         for extname in self.pfit_pars.keys():
             for ky in self.pfit_pars[extname]:
-                val = self._get_pfit_hdr_entry(extname,ky)
+                if 'DAT' in ky:
+                    val = self._get_pfit_bin_table_entry('SUBINT', ky)
+                elif 'TSUBINT' in ky:
+                    val = self._get_pfit_bin_entry('SUBINT', ky)
+                else:
+                    val = self._get_pfit_hdr_entry(extname,ky)
                 if isinstance(val,str) or isinstance(val,bytes):
                     val = val.strip()
 
@@ -239,6 +283,14 @@ class PSRFITS(BaseFile):
         """Retrieve a single header entry from PSRFITS file."""
         idx = self.file.draft_hdr_keys.index(extname)
         return self.file.fits_template[idx][key][row][0]
+    
+    def _get_pfit_bin_entry(self, extname, key, row=0):
+        """Retrieve a single header entry from PSRFITS file.
+        Different from get_pfit_bin_table_entry, this gets just
+        single value parameters (e.g. TSUBINT), not arrays or list values.
+        """
+        idx = self.file.draft_hdr_keys.index(extname)
+        return self.file.fits_template[idx][key][row]
 
     #### Define various PSRFITS parameters
     @property
@@ -285,7 +337,7 @@ class PSRFITS(BaseFile):
     def nrows(self):
         return self._nrows
 
-    @nbin.setter
+    @nrows.setter
     def nrows(self, value):
         self._nrows = value
 
@@ -312,3 +364,27 @@ class PSRFITS(BaseFile):
     @chan_bw.setter
     def chan_bw(self, value):
         self._chan_bw = make_quant(value,'MHz')
+    
+    @property
+    def stt_imjd(self):
+        return self._stt_imjd
+    
+    @stt_imjd.setter
+    def stt_imjd(self, value):
+        self._stt_imjd = make_quant(value, 'day')
+        
+    @property
+    def stt_smjd(self):
+        return self._stt_smjd
+    
+    @stt_smjd.setter
+    def stt_smjd(self, value):
+        self._stt_smjd = make_quant(value, 'second')
+        
+    @property
+    def tsubint(self):
+        return self._tsubint
+    
+    @tsubint.setter
+    def tsubint(self, value):
+        self._tsubint = make_quant(value, 'second')

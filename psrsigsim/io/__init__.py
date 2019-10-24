@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
 
-#from .psrfits import psrfits
-#from .txt import txt
+from .file import BaseFile
+from .psrfits import PSRFITS
+
+__all__ = [
+        "BaseFile",
+        "PSRFITS",
+ ]

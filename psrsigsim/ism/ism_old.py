@@ -76,6 +76,50 @@ class ISM(object):
         """
         if self.ISM_Dict['dispersed'] == True:
             raise ValueError('Signal has already been dispersed!')
+<<<<<<< HEAD:psrsigsim/ism/ism_old.py
+=======
+        if self.Signal_in.SignalType=='intensity':
+            #For intensity signal calculate dispersion for all sub-bands.
+            self.K = 1.0/2.41e-4 #constant used to be more consistent with PSRCHIVE
+            self.time_delays = -1e-3*self.K*self.DM*(np.power((self.freq_Array/1e3),-2)) #freq in MHz, delays in milliseconds
+            #Dispersion as compared to infinite frequency
+            if self.MD.mode == 'explore':
+                self.time_delays = np.rint(self.time_delays//self.TimeBinSize) #Convert to number of bins
+            elif self.MD.mode == 'simulate':
+                pass
+            
+            """
+            BRENT HACK: Need to adjust the time bin size that's used for
+            shifting the pulses in time. Even though we're integrating over
+            15 seconds, each 15 second subintegration should still be dispersed
+            as if we had just 2048 bins across a single profile.
+            """
+            if self.Signal_in.subintlen:
+                pulse_period = self.MD.pulsar_period # ms
+                bins_per_pulse = self.MD.nBins_per_period
+                dm_timebin = pulse_period / bins_per_pulse # ms
+            else:
+                dm_timebin = self.TimeBinSize
+            
+            #if use_pyfftw:
+                #dummy_array = pyfftw.empty_aligned(self.Nt, dtype=self.MD.data_type)
+                #Could test putting in data type float32 and seeing if that is faster.
+            shift_start = time.time()
+
+            for ii, freq in enumerate(self.freq_Array):
+                if self.to_DM_Broaden and self.MD.mode=='explore':
+                    raise ValueError('Dispersion broadening not currently supported in explore mode.')
+                #dummy_array[:] = self.signal[ii,:]
+                # BRENT HACK: changed the dt to be the dm_timebin variable defined above
+                self.signal[ii,:] = utils.shift_t(self.signal[ii,:], self.time_delays[ii], use_pyfftw=use_pyfftw, dt=dm_timebin)
+                if (ii+1) % int(self.Nf//20) ==0:
+                    shift_check = time.time()
+                    try: #Python 2 workaround. Python 2 __future__ does not have 'flush' kwarg.
+                        print('\r{0:2.0f}% dispersed in {1:4.3f} seconds.'.format(round((ii + 1)*100/self.Nf) , shift_check-shift_start), end='', flush=True)
+                    except: #This is the Python 2 version.
+                        print('\r{0:2.0f}% dispersed in {1:4.3f} seconds.'.format(round((ii + 1)*100/self.Nf) , shift_check-shift_start), end='')
+                    sys.stdout.flush()
+>>>>>>> c1804aeeb348731577c16ee58815a427c2cf8c62:psrsigsim/ism.py
 
         if self.Signal_in.SignalType=='intensity':
             self._disperse_filterbank()
