@@ -105,7 +105,7 @@ class BaseSignal(object):
 
     @property
     def tobs(self):
-            return self._tobs
+        return self._tobs
 
     @property
     def samprate(self):
