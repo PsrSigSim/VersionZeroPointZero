@@ -62,10 +62,6 @@ class FilterBankSignal(BaseSignal):
             self._samprate = (1/make_quant(20.48, 'us')).to('MHz')
         else:
             self._samprate = make_quant(sample_rate, 'MHz')
-            if self._samprate < f_Nyquist:
-                msg = ("specified sample rate {} < Nyquist frequency {}"
-                       .format(self._samprate, f_Nyquist))
-                print("Warning: "+msg)
 
         self._Nchan = Nsubband
         first = (self._fcent - self._bw/2).to('MHz').value
