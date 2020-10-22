@@ -127,7 +127,8 @@ class Telescope(object):
         if noise:
             # The noise is getting added to the data in the radiometer noise function; this function as no output
             # Need to look into this resampling as well
-            rcvr.radiometer_noise(signal, pulsar, gain=self.gain)
+            rcvr.radiometer_noise(signal, pulsar,
+                                  gain=self.gain, Tsys=self.Tsys)
 
 
         if signal.sigtype == 'voltage':
