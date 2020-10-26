@@ -28,7 +28,7 @@ class BasebandSignal(BaseSignal):
         dtype [type]: data type of array, default: ``np.float32``
             any numpy compatible floating point type will work
             
-        Nchan [int]: number of frequency channels to simulate, default is 2.
+        Nchan [int]: number of polarization channels to simulate, default is 2.
     """
 
     _sigtype = "BasebandSignal"

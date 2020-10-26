@@ -75,7 +75,7 @@ class Pulsar(object):
         # init base profile at correct sample rate
         Nph = int((signal.samprate * self.period).decompose())
 
-        # If there isn't enough frequencies in the profiles
+        # If there aren't enough frequencies in the profiles
         # And if it is a :class:`Profile` instance, reshape.
         self.Profiles.init_profiles(Nph, signal.Nchan)
 
@@ -114,18 +114,20 @@ class Pulsar(object):
         # generate several pulses in time
         distr = stats.norm()
 
-        Nsamp = int((signal.tobs * signal.samprate).decompose())
-        signal.init_data(Nsamp)
+        signal._nsamp = int((signal.tobs * signal.samprate).decompose())
+        signal.init_data(signal.nsamp)
 
         # TODO break into blocks
         # TODO phase from .par file
         # calc profile at phases
-        phs = (np.arange(Nsamp) /
+        phs = (np.arange(signal.nsamp) /
                 (signal.samprate * self.period).decompose().value)
         phs %= 1  # clip integer part
 
         # convert intensity profile to amplitude!
-        full_prof = np.sqrt(self.Profiles.calc_profiles(phs))
+        full_prof = np.sqrt(
+            self.Profiles.calc_profiles(phs, Nchan=signal.Nchan)
+        )
 
         signal._data = full_prof * distr.rvs(size=signal.data.shape)
 

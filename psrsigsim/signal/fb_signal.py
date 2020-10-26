@@ -140,10 +140,6 @@ class FilterBankSignal(BaseSignal):
     def nsub(self):
         return self._nsub
 
-    @property
-    def nsamp(self):
-        return self._nsamp
-
     def to_RF(self):
         """convert signal to RFSignal
         """

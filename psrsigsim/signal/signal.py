@@ -35,6 +35,8 @@ class BaseSignal(object):
     _Nchan = None
     _tobs = None  # set by Pulsar.make_pulses()
 
+    _nsamp = None
+
     _draw_max = None
     _draw_norm = 1
 
@@ -133,6 +135,10 @@ class BaseSignal(object):
     @property
     def samprate(self):
         return self._samprate
+    
+    @property
+    def nsamp(self):
+        return self._nsamp
 
     @property
     def dtype(self):
