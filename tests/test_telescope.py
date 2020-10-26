@@ -9,6 +9,7 @@ import psrsigsim.pulsar as psr
 import psrsigsim.telescope as telescope
 
 from psrsigsim.signal.fb_signal import FilterBankSignal
+from psrsigsim.signal.bb_signal import BasebandSignal
 from psrsigsim.pulsar.pulsar import Pulsar
 from psrsigsim.telescope.telescope import Telescope
 from psrsigsim.telescope.receiver import Receiver, _flat_response, response_from_data
@@ -23,6 +24,15 @@ def signal():
     """
     fbsig = FilterBankSignal(1400,400, fold=False, sample_rate = (1.0/0.005)*2048*10**-6)
     return fbsig
+
+@pytest.fixture
+def bb_signal():
+    """
+    Fixture signal class
+    - Makes a baseband signal
+    """
+    bbsig = BasebandSignal(1400,400)
+    return bbsig
 
 @pytest.fixture
 def subint_signal():
@@ -164,6 +174,16 @@ def test_subint_noise(tscope, receiver, backend, subint_signal, pulsar):
     tobs = make_quant(0.02,'s')
     pulsar.make_pulses(subint_signal,tobs)
     tscope.observe(subint_signal, pulsar, system="Twnty_M", noise=True)
+
+def test_bb_obs(tscope, receiver, backend, bb_signal, pulsar):
+    """
+    Test adding a system to the telescope and observing with subint signal
+    """
+    tscope.add_system(name="Twnty_M", receiver=receiver, backend=backend)
+    tobs = make_quant(0.01,'s')
+    pulsar.make_pulses(bb_signal,tobs)
+    with pytest.raises(NotImplementedError):
+        tscope.observe(bb_signal, pulsar, system="Twnty_M", noise=False)
 
 def test_sampling(receiver, signal, pulsar):
     """
