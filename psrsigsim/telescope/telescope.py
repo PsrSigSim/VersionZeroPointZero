@@ -127,8 +127,7 @@ class Telescope(object):
             rcvr.radiometer_noise(signal, pulsar,
                                   gain=self.gain, Tsys=self.Tsys)
 
-
-        if signal.sigtype == 'voltage':
+        if signal.sigtype in ["RFSignal", "BasebandSignal"]:
             # Difference between gauss and gamma draw here?
             clip = signal._draw_max
 
