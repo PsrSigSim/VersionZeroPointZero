@@ -101,10 +101,7 @@ class Telescope(object):
         elif dt_tel % dt_sig == 0:
             SampFactor = int(dt_tel // dt_sig)
             new_Nt = int(signal.nsamp//SampFactor)
-            if signal.sigtype == 'voltage':
-                out = np.zeros((signal.Npols, new_Nt))
-            else:
-                out = np.zeros((signal.Nchan, new_Nt))
+            out = np.zeros((signal.Nchan, new_Nt))
             for ii, row in enumerate(sig_in):
                 out[ii, :] = down_sample(row, SampFactor)
             print(msg.format((1/dt_sig).to("kHz").value, (1/dt_tel).to("kHz").value))
