@@ -83,6 +83,9 @@ class Telescope(object):
             If True will return the resampled signal as a numpy array. Otherwise
             will not return anything.
         """
+        if signal.sigtype in ["RFSignal", "BasebandSignal"]:
+            raise NotImplementedError
+
         msg = "sig samp freq = {0:.3f} kHz\ntel samp freq = {1:.3f} kHz"
         rcvr = self.systems[system][0]
         bak = self.systems[system][1]
