@@ -87,10 +87,20 @@ class Receiver(object):
 
         flux density fluctuations: sigS from Lorimer & Kramer eq 7.12
         """
-        if Tsys is None and Tenv is None:
+        # Check if values have astropy units attached
+        if hasattr(Tsys, 'value'):
+            Tsys_check = Tsys.value
+        else:
+            Tsys_check = Tsys
+        if hasattr(Tenv, 'value'):
+            Tenv_check = Tenv.value
+        else:
+            Tenv_check = Tenv
+            
+        if Tsys_check is None and Tenv_check is None:
             Tsys = self.Trec
-        elif Tenv is not None:
-            if Tsys is not None:
+        elif Tenv_check is not None:
+            if Tsys_check is not None:
                 msg = "specify EITHER Tsys OR Tenv, not both"
                 raise ValueError(msg)
             else:
@@ -103,7 +113,7 @@ class Receiver(object):
         # select noise generation method
         if signal.sigtype in ["RFSignal", "BasebandSignal"]:
             noise = self._make_amp_noise(signal, Tsys, gain, pulsar)
-        elif signal.sigtype is "FilterBankSignal":
+        elif signal.sigtype == "FilterBankSignal":
             noise = self._make_pow_noise(signal, Tsys, gain, pulsar)
         else:
             msg = "no pulse method for signal: {}".format(signal.sigtype)

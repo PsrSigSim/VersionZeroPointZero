@@ -46,7 +46,7 @@ def shift_t(y, shift, dt=1):
     Uses np.roll() for integer shifts and the Fourier shift theorem with
     real FFT in general.  Defined so positive shift yields a "delay".
     """
-    if isinstance(shift, int) and dt is 1:
+    if isinstance(shift, int) and dt == 1:
         out = np.roll(y, shift)
 
     else:
@@ -88,7 +88,7 @@ def rebin(ar, newlen):
         lbin = int(np.ceil(lbin))
         ar_new[ii, 0:rbin-lbin] = ar[lbin:rbin]
 
-    return sp.nanmean(ar_new, axis=1)  # ingnore NaNs in mean
+    return np.nanmean(ar_new, axis=1)  # ingnore NaNs in mean
 
 
 def top_hat_width(subband_df, subband_f0, DM):
@@ -169,9 +169,9 @@ def savitzky_golay(y, window_size, order, deriv=0, rate=1):
     order_range = range(order+1)
     half_window = int((window_size -1) // 2)
     # precompute coefficients
-    b = np.mat([[k**i for i in order_range] for k in range(-half_window,
+    b = np.array([[k**i for i in order_range] for k in range(-half_window,
                                                            half_window+1)])
-    m = np.linalg.pinv(b).A[deriv] * rate**deriv * factorial(deriv)
+    m = np.linalg.pinv(b)[deriv] * rate**deriv * factorial(deriv)
     # pad the signal at the extremes with
     # values taken from the signal itself
     firstvals = y[0] - np.abs(y[1:half_window+1][::-1] - y[0])
@@ -350,6 +350,7 @@ def get_pint_models(psr_name, psr_file_path):
 def make_par(signal, pulsar, outpar = "simpar.par"):
     """
     Function to create a par file for simulated pulsar.
+    TO DO: Will need to update when additional delays are added
 
     Parameters
     ----------

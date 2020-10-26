@@ -87,7 +87,7 @@ class Pulsar(object):
         # select pulse generation method
         if signal.sigtype in ["RFSignal", "BasebandSignal"]:
             self._make_amp_pulses(signal)
-        elif signal.sigtype is "FilterBankSignal":
+        elif signal.sigtype == "FilterBankSignal":
             self._make_pow_pulses(signal)
         else:
             msg = "no pulse method for signal: {}".format(signal.sigtype)

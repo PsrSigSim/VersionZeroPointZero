@@ -4,7 +4,7 @@ from __future__ import (absolute_import, division,
 import numpy as np
 from ..utils.utils import make_quant
 from .portraits import PulsePortrait, GaussPortrait, DataPortrait, UserPortrait
-
+from astropy import log
 from scipy.interpolate import CubicSpline as _cubeSpline
 
 class PulseProfile(PulsePortrait):
@@ -172,6 +172,12 @@ class DataProfile(DataPortrait):
     more details.
     """
     def __init__(self, profiles, phases=None, Nchan=None):
+        # Check that no profile bins are below zero intensity
+        if np.any(profiles < 0.0):
+            log.warning("Some phase bins of input profile are negative, replacing them with zeros...")
+            neg_idxs = np.where(profiles < 0.0)[0]
+            profiles[neg_idxs] = 0.0
+            
         self._phases = phases
         if profiles.ndim == 1:
             if Nchan is None:

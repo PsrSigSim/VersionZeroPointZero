@@ -220,6 +220,14 @@ class DataPortrait(PulsePortrait):
     more details.
     """
     def __init__(self, profiles, phases=None):
+        # Check that no profile bins are below zero intensity
+        if np.any(profiles < 0.0):
+            log.warning("Some phase bins of input profile are negative, replacing them with zeros...")
+            for prof in profiles:
+                if np.any(prof < 0.0):
+                    neg_idxs = np.where(prof < 0.0)[0]
+                    prof[neg_idxs] = 0.0
+        
         if phases is None:
             # infer phases
             N = profiles.shape[1]

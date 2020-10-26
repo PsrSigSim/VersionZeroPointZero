@@ -93,7 +93,7 @@ class Telescope(object):
         sig_in = signal.data
         dt_tel = 1/(2*bak.samprate)
         # if we have subintegrations, need to get new dt_sig
-        if signal.sublen:
+        if hasattr(signal.sublen, 'value'):
             dt_sig = signal.sublen / (signal.nsamp/signal.nsub) # bins per subint; s
         else:
             dt_sig = signal.tobs / signal.nsamp # unit: s

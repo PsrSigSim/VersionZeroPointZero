@@ -4,7 +4,6 @@
 from __future__ import (absolute_import, division,
                         print_function, unicode_literals)
 import numpy as np
-from packaging import version
 import fitsio
 import pdat
 from .file import BaseFile
@@ -598,13 +597,8 @@ class PSRFITS(BaseFile):
         """
         idx = self.file.draft_hdr_keys.index(extname)
         for val in self.file.fits_template[idx][:]:
-            # Have correction based on version of fitsio being used
-            if version.parse(fitsio.__version__) >= version.parse('1.0.1'):
-                if param == val[0].split()[0]:
-                    return np.float64(val[0].split()[1].replace("D","E"))
-            else:
-                if param == val[0].split()[0].decode("utf-8"):
-                    return np.float64(val[0].split()[1].decode("utf-8").replace("D","E"))
+            if param == val[0].split()[0].decode("utf-8"):
+                return np.float64(val[0].split()[1].decode("utf-8").replace("D","E"))
 
     #### Define various PSRFITS parameters
     @property
