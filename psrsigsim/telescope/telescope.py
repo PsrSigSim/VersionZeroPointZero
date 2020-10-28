@@ -93,10 +93,11 @@ class Telescope(object):
         sig_in = signal.data
         dt_tel = 1/(2*bak.samprate)
         # if we have subintegrations, need to get new dt_sig
-        if hasattr(signal.sublen, 'value'):
-            dt_sig = signal.sublen / (signal.nsamp/signal.nsub) # bins per subint; s
+        if (signal.sigtype == "FilterBankSignal"
+            and signal.sublen is not None):
+            dt_sig = signal.sublen / (signal.nsamp/signal.nsub)
         else:
-            dt_sig = signal.tobs / signal.nsamp # unit: s
+            dt_sig = signal.tobs / signal.nsamp
 
         if dt_sig == dt_tel:
             out = np.array(sig_in, dtype=float)
