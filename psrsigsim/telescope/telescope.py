@@ -112,8 +112,8 @@ class Telescope(object):
 
         elif dt_tel > dt_sig:
             new_Nt = int(signal.tobs // dt_tel)
-            if signal.sigtype == 'voltage':
-                out = np.zeros((signal.Npols, new_Nt))
+            if signal.sigtype in ["RFSignal", "BasebandSignal"]:
+                out = np.zeros((signal.Nchan, new_Nt))
             else:
                 out = np.zeros((signal.Nchan, new_Nt))
             for ii, row in enumerate(sig_in):
