@@ -87,8 +87,8 @@ class GaussProfile(GaussPortrait):
         amp (float): amplitude of pulse relative to other pulses, default: ``1``
 
     Pulses are normalized so that maximum is 1.
-    See draw_voltage_pulse, draw_intensity_pulse and make_pulses() methods for
-    more details.
+    See the `Pulsar._make_amp_pulses()`, `Pulsar._make_pow_pulses()`, and
+    `Pulsar.make_pulses()` methods for more details.
     """
     def __init__(self, peak=0.5, width=0.05, amp=1):
         #TODO: error checking for array length consistency?
@@ -130,8 +130,8 @@ class UserProfile(PulseProfile):
             array-like input, a phase or list of phases.
 
     Profile is renormalized so that maximum is 1.
-    See draw_voltage_pulse, draw_intensity_pulse and make_pulses() methods for
-    more details.
+    See the `Pulsar._make_amp_pulses()`, `Pulsar._make_pow_pulses()`, and
+    `Pulsar.make_pulses()` methods for more details.
     """
     def __init__(self, profile_func):
         # _generator is not a property, it has no setter or getter
@@ -168,8 +168,8 @@ class DataProfile(DataPortrait):
             rotation period.
 
     Profile is renormalized so that maximum is 1.
-    See draw_voltage_pulse, draw_intensity_pulse and make_pulses() methods for
-    more details.
+    See the `Pulsar._make_amp_pulses()`, `Pulsar._make_pow_pulses()`, and
+    `Pulsar.make_pulses()` methods for more details.
     """
     def __init__(self, profiles, phases=None, Nchan=None):
         # Check that no profile bins are below zero intensity
