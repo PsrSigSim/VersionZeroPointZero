@@ -16,6 +16,7 @@ from ..signal import FilterBankSignal
 import pint.models as models
 import pint.polycos as polycos
 import pint.toa as toa
+import warnings
 
 __all__ = ["PSRFITS"]
 
@@ -348,6 +349,13 @@ class PSRFITS(BaseFile):
         # If mode not search, set nsblk to 1
         if self.obs_mode != 'SEARCH':
             self.nsblk = 1
+        
+        # Make sure PSRFITS.nsubint and signal.nsub are the same
+        if self.nsubint != signal.nsub:
+            # Raise a warning
+            warnings.warn("PSRFITS.nsubint != SIGNAL.nsub, using SIGNAL.nsub...")
+            self._nsubint = signal.nsub
+            
         # We need to appropriatly shape the signal for the fits file
         stop = self.nbin*self.nsubint
         sim_sig = signal.data[:,:stop].astype('>i2')
@@ -373,13 +381,13 @@ class PSRFITS(BaseFile):
                 qq = ii
             if eq_wts:
                 # Get the shapes of the wieghts, scales, and offs arrays, assumes we want to reset these to all be equal
-                if len(np.shape(self.file.fits_template['SUBINT'][0]['DAT_SCL'])) != 1:
+                if len(np.shape(self.file.fits_template['SUBINT'][0]['DAT_SCL'])) > 1:
                     scale_shape = np.shape(self.file.fits_template['SUBINT'][qq]['DAT_SCL'][:,:self.nchan*self.npol])
                     offs_shape = np.shape(self.file.fits_template['SUBINT'][qq]['DAT_OFFS'][:,:self.nchan*self.npol])
                     weight_shape = np.shape(self.file.fits_template['SUBINT'][qq]['DAT_WTS'][:,:self.nchan])
                 else:
-                    scale_shape = np.shape(self.file.fits_template['SUBINT'][qq]['DAT_SCL'][:])
-                    offs_shape = np.shape(self.file.fits_template['SUBINT'][qq]['DAT_OFFS'][:])
+                    scale_shape = np.shape(self.file.fits_template['SUBINT'][qq]['DAT_SCL'])
+                    offs_shape = np.shape(self.file.fits_template['SUBINT'][qq]['DAT_OFFS'])
                     weight_shape = np.shape(self.file.fits_template['SUBINT'][qq]['DAT_WTS'])
                 # Now assign the values
                 #print(scale_shape, offs_shape, weight_shape)
@@ -500,7 +508,7 @@ class PSRFITS(BaseFile):
             self.file.copy_template_BinTable(ky)
 
         self.file.set_subint_dims(nbin=self.nbin, nsblk=self.nsblk,
-                                  nchan=self.nchan, nsubint=self.nrows,
+                                  nchan=self.nchan, nsubint=self.nsubint,
                                   npol=self.npol,
                                   data_dtype=self.dtypes['DATA'][0],
                                   obs_mode=self.pfit_dict['OBS_MODE'])
@@ -556,9 +564,9 @@ class PSRFITS(BaseFile):
             self.tsubint = self.pfit_dict['TSUBINT'] # length of subint in seconds
 
             if self.obs_mode=='PSR':
-                self.nsubint = self.nrows
+                self._nsubint = self.nrows
             else:
-                self.nsubint = None
+                self._nsubint = None
         # get parameters from signal class
         else:
             self._make_psrfits_pars_dict()
@@ -576,9 +584,9 @@ class PSRFITS(BaseFile):
             self.tsubint = signal.sublen # length of subint in seconds
 
             if self.obs_mode=='PSR':
-                self.nsubint = self.nrows
+                self._nsubint = self.nrows
             else:
-                self.nsubint = None
+                self._nsubint = None
 
 
     def _make_psrfits_pars_dict(self):
@@ -618,9 +626,9 @@ class PSRFITS(BaseFile):
         """Retrieve a single header entry from PSRFITS file."""
         idx = self.file.draft_hdr_keys.index(extname)
         try:
-            return self.file.fits_template[idx][key][row][0]
-        except:
             return self.file.fits_template[idx][key][row]
+        except:
+            return self.file.fits_template[idx][key][row][0]
 
     def _get_pfit_bin_entry(self, extname, key, row=0):
         """Retrieve a single header entry from PSRFITS file.
@@ -687,6 +695,14 @@ class PSRFITS(BaseFile):
     @nrows.setter
     def nrows(self, value):
         self._nrows = value
+    
+    @property
+    def nsubint(self):
+        return self._nsubint
+
+    @nsubint.setter
+    def nsubint(self, value):
+        self._nsubint = value
 
     @property
     def obsfreq(self):
